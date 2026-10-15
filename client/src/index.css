@@ -6,14 +6,130 @@
   :root {
     --bg-parchment: #FAF5E8;
     --border-palm: #E2D2B3;
+    /* Safe-area insets for notched phones */
+    --sat: env(safe-area-inset-top, 0px);
+    --sab: env(safe-area-inset-bottom, 0px);
+    --sal: env(safe-area-inset-left, 0px);
+    --sar: env(safe-area-inset-right, 0px);
+
+    /* JOB 3: Typography Design Tokens */
+    --font-heading: "Noto Serif Tamil", Georgia, serif;
+    --font-body-stack: "Mukta Malar", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    
+    /* Strict Fluid Type Scale */
+    --font-h1: clamp(2.25rem, 5.5vw, 3.75rem);
+    --font-h2: clamp(1.6rem, 3.4vw, 2.4rem);
+    --font-h3: clamp(1.25rem, 2.2vw, 1.6rem);
+    --font-body: 0.9375rem; /* 15px, never below 14px */
+    --font-small: 0.8125rem;
+    --font-kural: clamp(1.4rem, 2.8vw, 1.75rem);
+
+    /* Heading Colors & Ink */
+    --color-heading-gold: #F6E7B4;
+    --color-heading-amber: #E8B84A;
+    --color-parchment-ink: #2A1A0A;
   }
-  
-  body {
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background-color: #0B1B2B;
+    background-image: linear-gradient(to bottom, rgba(11, 27, 43, 0.38) 0%, rgba(11, 27, 43, 0.6) 100%), url('/images/bg/bg-1920.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    color: #F8FAFC;
+    font-family: var(--font-body-stack);
+    font-size: var(--font-body);
+    line-height: 1.55;
+    letter-spacing: 0;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     touch-action: manipulation;
+    /* Prevent white flash and rubber-banding */
+    overscroll-behavior: none;
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
+  @media (max-width: 768px) {
+    html, body {
+      background-attachment: scroll;
+      background-position: 28% center;
+    }
+  }
+
+  /* Dynamic & Small viewport heights */
+  #root {
+    min-height: 100dvh;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    background-color: transparent;
+  }
+
+  /* Heading Hierarchy */
+  h1 {
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: var(--font-h1);
+    line-height: 1.2;
+    letter-spacing: 0;
+    color: var(--color-heading-gold);
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.55);
+  }
+
+  h2 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: var(--font-h2);
+    line-height: 1.25;
+    letter-spacing: 0;
+    color: var(--color-heading-gold);
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+  }
+
+  h3 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: var(--font-h3);
+    line-height: 1.3;
+    letter-spacing: 0;
+    color: var(--color-heading-amber);
+    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.4);
+  }
+
+  button, input, textarea, select {
+    font-family: var(--font-body-stack);
   }
 }
+
+/* Responsive object position keeping statue and Valluvar figure in view */
+.fullbleed-object-pos {
+  object-position: 28% center; /* Phone default */
+}
+@media (min-width: 768px) {
+  .fullbleed-object-pos {
+    object-position: 30% 45%; /* Desktop / Tablet */
+  }
+}
+@media (min-width: 1920px) {
+  .fullbleed-object-pos {
+    object-position: center center; /* Ultra-wide */
+  }
+}
+
+/* Couplets on parchment cards */
+.kural-couplet-text {
+  font-family: var(--font-heading);
+  font-size: var(--font-kural);
+  line-height: 1.7;
+  letter-spacing: 0;
+  color: var(--color-parchment-ink);
+  font-weight: 700;
+}
+
 
 /* Palm Leaf Manuscript Texture and Kolam Accent Patterns */
 .bg-kolam-pattern {
@@ -71,4 +187,57 @@
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #B45309;
+}
+
+/* === Kural Couplet Display === */
+/* Large Tamil text with generous line-height for couplets */
+.kural-text {
+  font-family: "Times New Roman", Times, "Noto Serif Tamil", serif;
+  font-size: clamp(1.1rem, 3vw, 1.4rem);
+  line-height: 1.7;
+  letter-spacing: 0.01em;
+}
+
+/* === Utility: hide scrollbar but keep scroll === */
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* === Bottom nav safe-area padding for notched phones === */
+.pb-safe {
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 4rem);
+}
+.bottom-nav-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* === Touch target — ensure 44px minimum === */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* === Word diff highlighting === */
+.word-wrong {
+  color: #DC2626;
+  text-decoration: line-through;
+  text-decoration-color: #DC2626;
+  font-weight: 700;
+}
+.word-correct {
+  color: #15803D;
+  font-weight: 700;
+  background: #DCFCE7;
+  padding: 0 2px;
+  border-radius: 2px;
+}
+.dark .word-correct {
+  background: #14532D;
 }

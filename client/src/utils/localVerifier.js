@@ -1,5 +1,10 @@
 /**
- * Client-side 100% Offline Tirukkural Verifier & Search Engine
+ * மெய்க்குறள் (MeyKural) Client-side 100% Offline Tirukkural Verifier
+ * The only source of truth is the 1,330 canonical couplets.
+ * Exactly 3 Outcomes:
+ * 1. VERIFIED: Exact match after Unicode normalization.
+ * 2. NEAR MATCH: Matches ONE real couplet except <= MAX_WRONG_WORDS (2 words).
+ * 3. NOT FOUND: Anything else. Shows only: "Not found. This kural does not exist in the 1,330 Tirukkural couplets."
  */
 import { getBundleFromIndexedDb, saveBundleToIndexedDb } from './indexedDb';
 
@@ -64,9 +69,7 @@ export function checkVenbaMeter(rawText) {
     };
   }
 
-  const normalized = rawText.normalize('NFC').trim();
-  const rawLines = normalized.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
-
+  const rawLines = rawText.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
   let line1 = '';
   let line2 = '';
 
@@ -91,258 +94,153 @@ export function checkVenbaMeter(rawText) {
   const totalCirs = l1Words.length + l2Words.length;
   const valid = l1Words.length === 4 && l2Words.length === 3;
 
-  let explanation = '';
-  if (valid) {
-    explanation = 'Strict Kural Venba meter matched: Line 1 has 4 cirs, Line 2 has 3 cirs (Total: 7 cirs).';
-  } else {
-    explanation = `Meter deviation: Line 1 has ${l1Words.length} cirs (expected 4), Line 2 has ${l2Words.length} cirs (expected 3). Total: ${totalCirs}/7 cirs.`;
-  }
-
   return {
     valid,
     line1Cirs: l1Words.length,
     line2Cirs: l2Words.length,
     totalCirs,
-    explanation,
-    parsedLines: { line1, line2 }
+    explanation: valid
+      ? 'Strict Kural Venba meter matched (4 + 3 = 7 cirs).'
+      : `Format deviation: Line 1 has ${l1Words.length}/4 cirs, Line 2 has ${l2Words.length}/3 cirs.`
   };
 }
 
-export function levenshteinDistance(s1, s2) {
-  const m = s1.length;
-  const n = s2.length;
-  if (m === 0) return n;
-  if (n === 0) return m;
-
-  let prev = new Array(n + 1);
-  let curr = new Array(n + 1);
-
-  for (let j = 0; j <= n; j++) prev[j] = j;
-
-  for (let i = 1; i <= m; i++) {
-    curr[0] = i;
-    const c1 = s1.charAt(i - 1);
-    for (let j = 1; j <= n; j++) {
-      const c2 = s2.charAt(j - 1);
-      const cost = c1 === c2 ? 0 : 1;
-      curr[j] = Math.min(prev[j] + 1, curr[j - 1] + 1, prev[j - 1] + cost);
-    }
-    const temp = prev;
-    prev = curr;
-    curr = temp;
-  }
-  return prev[n];
-}
-
-export function stringSimilarity(s1, s2) {
-  const maxLen = Math.max(s1.length, s2.length);
-  if (maxLen === 0) return 1.0;
-  const dist = levenshteinDistance(s1, s2);
-  return Math.max(0, 1.0 - dist / maxLen);
-}
-
-export function computeWordDiff(inputText, canonicalKural) {
-  const inputWords = normalizeTamil(inputText).split(' ').filter(Boolean);
-  const canonWords = normalizeTamil(`${canonicalKural.line1} ${canonicalKural.line2}`).split(' ').filter(Boolean);
-
+function computeWordDiff(inputWords, canonWords) {
   const diffResult = [];
   const maxWords = Math.max(inputWords.length, canonWords.length);
+  let wrongCount = 0;
 
   for (let i = 0; i < maxWords; i++) {
-    const inWord = inputWords[i] || '';
-    const canWord = canonWords[i] || '';
-
-    if (inWord === canWord) {
+    const inW = inputWords[i] || '';
+    const canW = canonWords[i] || '';
+    if (inW === canW) {
       diffResult.push({
         position: i + 1,
-        inputWord: inWord,
-        canonicalWord: canWord,
+        inputWord: inW,
+        canonicalWord: canW,
         status: 'match'
       });
-    } else if (!inWord && canWord) {
-      diffResult.push({
-        position: i + 1,
-        inputWord: '',
-        canonicalWord: canWord,
-        status: 'missing'
-      });
-    } else if (inWord && !canWord) {
-      diffResult.push({
-        position: i + 1,
-        inputWord: inWord,
-        canonicalWord: '',
-        status: 'extra'
-      });
     } else {
-      const sim = stringSimilarity(inWord, canWord);
+      wrongCount++;
       diffResult.push({
         position: i + 1,
-        inputWord: inWord,
-        canonicalWord: canWord,
-        status: sim > 0.6 ? 'typo' : 'substituted',
-        similarity: Math.round(sim * 100)
+        inputWord: inW,
+        canonicalWord: canW,
+        status: 'mismatch'
       });
     }
   }
 
-  const differences = diffResult.filter((d) => d.status !== 'match');
-  return {
-    diffResult,
-    hasDifferences: differences.length > 0,
-    differenceCount: differences.length,
-    differences
-  };
+  return { diffResult, wrongCount };
 }
 
-export async function verifyCoupletLocal(inputText) {
+export async function verifyCoupletLocal(inputText, options = {}) {
   const bundle = await initOfflineData();
   if (!bundle || !bundle.kurals) {
     throw new Error('Offline database not initialized.');
   }
 
   const kurals = bundle.kurals;
-  const config = bundle.config || {
-    thresholds: { verified_min: 0.88, uncertain_min: 0.58, fake_max: 0.58 },
-    trusted_site: {
-      name: 'Tamil Virtual Academy / Official Thirukkural Portal',
-      base_url: 'https://thirukkural.gokulnath.com',
-      search_url_template: 'https://thirukkural.gokulnath.com/?kural={number}'
-    }
-  };
+  const maxWrongWords = options.maxWrongWords || bundle.config?.max_wrong_words || 2;
 
   const rawClean = (inputText || '').trim();
   if (!rawClean) {
-    return { status: 'error', message: 'Empty input.' };
+    return {
+      status: 'not_found',
+      verdict: 'Not Found',
+      verdict_ta: 'திருக்குறளில் இல்லை',
+      message: 'Not found. This kural does not exist in the 1,330 Tirukkural couplets.',
+      kural: null
+    };
   }
 
   const meter = checkVenbaMeter(rawClean);
   const normalizedInput = normalizeTamil(rawClean);
-  const inputCompact = normalizedInput.replace(/\s+/g, '');
+  const compactInput = normalizedInput.replace(/\s+/g, '');
+  const inputWords = normalizedInput.split(' ').filter(Boolean);
 
-  // 1. Exact Match
+  // 1. EXACT MATCH (VERIFIED)
   for (const k of kurals) {
     const kuralNormalized = normalizeTamil(`${k.line1} ${k.line2}`);
-    const kuralCompact = kuralNormalized.replace(/\s+/g, '');
+    const compactKural = kuralNormalized.replace(/\s+/g, '');
 
-    if (inputCompact === kuralCompact) {
-      const trustedUrl = config.trusted_site.search_url_template.replace('{number}', k.number);
+    if (compactInput === compactKural) {
+      const canonWords = kuralNormalized.split(' ').filter(Boolean);
       return {
         status: 'verified',
-        verdict: 'Verified Authentic Tirukkural',
+        verdict: 'Verified',
         verdict_ta: 'உண்மையான திருக்குறள்',
-        seal: 'green_seal',
-        trust_gauge: 'authentic',
-        confidence: 1.0,
         confidence_percent: 100,
-        match_type: 'exact',
-        kural: k,
         meter,
+        kural: k,
+        wrong_words_count: 0,
         word_diff: {
           hasDifferences: false,
           differenceCount: 0,
-          diffResult: normalizeTamil(`${k.line1} ${k.line2}`).split(' ').map((w, idx) => ({
+          diffResult: canonWords.map((w, idx) => ({
             position: idx + 1,
             inputWord: w,
             canonicalWord: w,
             status: 'match'
           }))
         },
-        trusted_site_url: trustedUrl,
-        trusted_site_name: config.trusted_site.name,
-        recommendation: `Couplet verified authentically as Kural #${k.number} from Chapter ${k.chapter_name} (${k.chapter_translation}).`
+        message: 'Verified: Exact match with canonical Tirukkural couplet.'
       };
     }
   }
 
-  // 2. Similarity calculation
-  let bestScore = -1;
-  let bestKural = null;
-  const candidates = [];
-  const inputWords = normalizedInput.split(' ').filter(Boolean);
+  // 2. NEAR MATCH (<= 2 words wrong)
+  let bestCandidate = null;
+  let minWrongWords = Infinity;
+  let bestDiff = null;
 
   for (const k of kurals) {
-    const kuralNormalized = normalizeTamil(`${k.line1} ${k.line2}`);
-    const kuralWords = kuralNormalized.split(' ').filter(Boolean);
+    const canonNormalized = normalizeTamil(`${k.line1} ${k.line2}`);
+    const canonWords = canonNormalized.split(' ').filter(Boolean);
 
-    const commonWords = inputWords.filter((w) => kuralWords.includes(w));
-    const tokenOverlap = (2 * commonWords.length) / (inputWords.length + kuralWords.length);
-    const charSim = stringSimilarity(inputCompact, kuralNormalized.replace(/\s+/g, ''));
+    const { diffResult, wrongCount } = computeWordDiff(inputWords, canonWords);
 
-    const combinedScore = 0.55 * charSim + 0.45 * tokenOverlap;
-
-    if (combinedScore > bestScore) {
-      bestScore = combinedScore;
-      bestKural = k;
-    }
-
-    if (combinedScore >= 0.35) {
-      candidates.push({ kural: k, score: combinedScore });
+    if (wrongCount < minWrongWords) {
+      minWrongWords = wrongCount;
+      bestCandidate = k;
+      bestDiff = diffResult;
     }
   }
 
-  candidates.sort((a, b) => b.score - a.score);
-  const topCandidates = candidates.slice(0, 5).map((c) => ({
-    number: c.kural.number,
-    chapter_name: c.kural.chapter_name,
-    line1: c.kural.line1,
-    line2: c.kural.line2,
-    similarity: Math.round(c.score * 100),
-    meaning_mv: c.kural.meaning_mv,
-    translation_en: c.kural.translation_en
-  }));
-
-  const wordDiff = computeWordDiff(rawClean, bestKural);
-  const trustedUrl = config.trusted_site.search_url_template.replace('{number}', bestKural.number);
-
-  let status = 'fake';
-  let verdict = 'Not in Tirukkural';
-  let verdict_ta = 'திருக்குறளில் இல்லாத மேற்கோள் (போலி)';
-  let seal = 'red_cracked_seal';
-  let trustGauge = 'fabricated';
-  let recommendation = '';
-
-  const finalConfidence = Math.max(0, Math.min(1, bestScore));
-  const confidencePercent = Math.round(finalConfidence * 100);
-
-  if (wordDiff.differenceCount === 0 && finalConfidence >= 0.95) {
-    status = 'verified';
-    verdict = 'Verified Authentic Tirukkural';
-    verdict_ta = 'உண்மையான திருக்குறள்';
-    seal = 'green_seal';
-    trustGauge = 'authentic';
-    recommendation = `Authentic couplet verified as Kural #${bestKural.number} from Chapter ${bestKural.chapter_name} (${bestKural.chapter_translation}).`;
-  } else if (finalConfidence >= config.thresholds.uncertain_min && wordDiff.differenceCount <= 3) {
-    status = 'uncertain';
-    verdict = 'Uncertain (Altered Couplet Detected)';
-    verdict_ta = 'சந்தேகத்திற்குரியது (சொல் மாற்றம் கண்டறியப்பட்டது)';
-    seal = 'amber_seal';
-    trustGauge = 'suspicious';
-    recommendation = `Warning: High similarity (${confidencePercent}%) to Kural #${bestKural.number}, but with ${wordDiff.differenceCount} altered or substituted word(s). Please consult a human Tamil scholar and verify on trusted portals before citing.`;
-  } else {
-    status = 'fake';
-    verdict = 'Not in Tirukkural';
-    verdict_ta = 'திருக்குறளில் இல்லாத போலி மேற்கோள்';
-    seal = 'red_cracked_seal';
-    trustGauge = 'fabricated';
-    recommendation = `Error: This quotation does not exist in the 1,330 couplets of Tirukkural. The nearest legitimate couplet is Kural #${bestKural.number} (${confidencePercent}% similarity). Do not cite AI hallucinations as classical literature.`;
+  if (bestCandidate && minWrongWords > 0 && minWrongWords <= maxWrongWords) {
+    const wrongItems = bestDiff.filter((d) => d.status === 'mismatch');
+    return {
+      status: 'near_match',
+      verdict: 'Incorrect, needs correction',
+      verdict_ta: 'தவறானது, திருத்தம் தேவை',
+      wrong_words_count: minWrongWords,
+      wrong_words: wrongItems,
+      message: `Only ${minWrongWords} word(s) are wrong`,
+      message_ta: `${minWrongWords} சொல்(கள்) மட்டுமே தவறானது`,
+      confidence_percent: Math.round(((7 - minWrongWords) / 7) * 100),
+      meter,
+      kural: bestCandidate,
+      word_diff: {
+        hasDifferences: true,
+        differenceCount: minWrongWords,
+        differences: wrongItems,
+        diffResult: bestDiff
+      }
+    };
   }
 
+  // 3. NOT FOUND (Strict: anything else)
   return {
-    status,
-    verdict,
-    verdict_ta,
-    seal,
-    trust_gauge: trustGauge,
-    confidence: finalConfidence,
-    confidence_percent: confidencePercent,
-    match_type: finalConfidence >= 0.95 ? 'exact' : 'fuzzy',
-    nearest_kural: bestKural,
+    status: 'not_found',
+    verdict: 'Not Found',
+    verdict_ta: 'திருக்குறளில் இல்லை',
+    confidence_percent: 0,
     meter,
-    word_diff: wordDiff,
-    top_candidates: topCandidates,
-    trusted_site_url: trustedUrl,
-    trusted_site_name: config.trusted_site.name,
-    recommendation
+    kural: null,
+    nearest_kural: null,
+    top_candidates: [],
+    message: 'Not found. This kural does not exist in the 1,330 Tirukkural couplets.',
+    message_ta: 'திருக்குறளில் இல்லை. இந்த குறள் 1,330 திருக்குறள் பாடல்களில் காணப்படவில்லை.'
   };
 }
 

@@ -1,11 +1,11 @@
 {
-  "name": "மெய்க்குறள் | MeyKural",
-  "short_name": "MeyKural",
-  "description": "AI Hallucination Shield for Tamil Literary Quotations & Tirukkural Verifier",
+  "name": "மெய்க்குறள் (Meikkural)",
+  "short_name": "மெய்க்குறள்",
+  "description": "AI Hallucination Shield for Tamil Classical Literature",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#FAF5E8",
-  "theme_color": "#FAF5E8",
+  "background_color": "#0B1B2B",
+  "theme_color": "#0B1B2B",
   "orientation": "portrait",
   "icons": [
     {

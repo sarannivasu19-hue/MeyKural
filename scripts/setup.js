@@ -11,6 +11,8 @@ const path = require('path');
 const readline = require('readline');
 const { execSync } = require('child_process');
 
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
+
 const { prepareDataset } = require('./build_raw_dataset');
 const { buildDatabaseAndEmbeddings } = require('./build_db_and_embeddings');
 const { buildTestSet } = require('./build_test_set');
@@ -23,46 +25,28 @@ function promptAsync(rl, query) {
   return new Promise((resolve) => rl.question(query, resolve));
 }
 
+const { promptAndSetKey } = require('./set_key');
+
 async function handleEnvSetup() {
   if (fs.existsSync(ENV_FILE)) {
     console.log('✅ Found existing .env file.');
+    const envData = fs.readFileSync(ENV_FILE, 'utf8');
+    const hasKey = /^GEMINI_API_KEY=(.+)$/m.test(envData);
+    if (!hasKey && process.stdin.isTTY) {
+      console.log('⚙️ GEMINI_API_KEY is missing from .env.');
+      await promptAndSetKey({ allowSkip: true });
+    }
     return;
   }
 
   console.log('⚙️ .env file not found. Initializing from .env.example...');
   let envContent = fs.readFileSync(ENV_EXAMPLE, 'utf8');
-
-  // Check if interactive TTY
-  if (process.stdin.isTTY) {
-    const rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout
-    });
-
-    console.log('\n--- Optional AI RAG Configuration ---');
-    console.log('You can provide a Google Gemini or Anthropic API key to enable live AI explanation.');
-    console.log('Press [Enter] to skip (all offline verification, library, and games will work 100%).\n');
-
-    const geminiKey = await promptAsync(rl, 'Enter GEMINI_API_KEY (optional, press Enter to skip): ');
-    let anthropicKey = '';
-    if (!geminiKey.trim()) {
-      anthropicKey = await promptAsync(rl, 'Enter ANTHROPIC_API_KEY (optional, press Enter to skip): ');
-    }
-    rl.close();
-
-    if (geminiKey.trim()) {
-      envContent = envContent.replace('GEMINI_API_KEY=', `GEMINI_API_KEY=${geminiKey.trim()}`);
-      console.log('🔑 GEMINI_API_KEY configured.');
-    } else if (anthropicKey.trim()) {
-      envContent = envContent.replace('ANTHROPIC_API_KEY=', `ANTHROPIC_API_KEY=${anthropicKey.trim()}`);
-      console.log('🔑 ANTHROPIC_API_KEY configured.');
-    } else {
-      console.log('ℹ️ No API key provided. Offline mode will be used for AI features.');
-    }
-  }
-
   fs.writeFileSync(ENV_FILE, envContent, 'utf8');
-  console.log('✅ Created .env file securely.');
+  console.log('✅ Created .env file.');
+
+  if (process.stdin.isTTY) {
+    await promptAndSetKey({ allowSkip: true });
+  }
 }
 
 async function main() {
@@ -82,6 +66,11 @@ async function main() {
     // 3. SQLite and Embeddings
     console.log('\n[Step 2/4] Building SQLite database and precomputed embeddings...');
     buildDatabaseAndEmbeddings();
+
+    // 3b. Seed admin account into SQLite database
+    console.log('\n[Step 2b] Seeding admin account into SQLite database...');
+    const { seedAdminAccount } = require('../server/auth');
+    await seedAdminAccount();
 
     // 4. Test benchmark set
     console.log('\n[Step 3/4] Generating 50 Real + 50 Fake evaluation benchmark...');

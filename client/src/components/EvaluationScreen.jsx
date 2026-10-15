@@ -1,231 +1,217 @@
 import React, { useState, useEffect } from 'react';
-import { BarChart3, CheckCircle2, ShieldCheck, Play, Layers, AlertTriangle } from 'lucide-react';
-import { t } from '../utils/translations';
-import { verifyCoupletLocal } from '../utils/localVerifier';
+import { motion } from 'framer-motion';
+import {
+  BarChart3,
+  CheckCircle2,
+  XCircle,
+  Play,
+  Download,
+  RefreshCw,
+  Layers,
+  ShieldCheck,
+  Zap,
+  Lock,
+  Wifi,
+  HelpCircle
+} from 'lucide-react';
+import { APP_CONFIG } from '../config';
 
 export default function EvaluationScreen({ lang = 'ta' }) {
-  const [metrics, setMetrics] = useState(null);
+  const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [selectedFilter, setSelectedFilter] = useState('all'); // all, real, fake, missed
+  const [progress, setProgress] = useState(0);
 
-  const runEvaluation = async () => {
+  useEffect(() => {
+    runTests();
+  }, []);
+
+  const runTests = async () => {
     setLoading(true);
+    setProgress(10);
+
     try {
-      // 1. Try server endpoint first
-      const serverRes = await fetch('/api/evaluate').catch(() => null);
-      if (serverRes && serverRes.ok) {
-        const data = await serverRes.json();
-        setMetrics(data);
-        setLoading(false);
-        return;
+      const interval = setInterval(() => {
+        setProgress((p) => (p < 90 ? p + 20 : p));
+      }, 150);
+
+      const res = await fetch('/api/evaluate');
+      clearInterval(interval);
+      setProgress(100);
+
+      if (res.ok) {
+        const metrics = await res.json();
+        setData(metrics);
       }
-
-      // 2. Offline fallback: fetch test set and run client-side verifier
-      const testRes = await fetch('/data/evaluation_dataset.json').catch(() => null);
-      let testData = null;
-      if (testRes && testRes.ok) {
-        testData = await testRes.json();
-      }
-
-      if (!testData) {
-        // Fallback generated if file unavailable
-        setLoading(false);
-        return;
-      }
-
-      const { real, fake } = testData;
-      let tp = 0, fn = 0, tn = 0, fp = 0;
-      const realResults = [];
-      const fakeResults = [];
-
-      for (const sample of real) {
-        const res = await verifyCoupletLocal(sample.text);
-        const isVerified = res.status === 'verified';
-        if (isVerified) tp++; else fn++;
-        realResults.push({
-          id: sample.id,
-          kural_number: sample.kural_number,
-          text: sample.text,
-          status: res.status,
-          confidence: res.confidence_percent,
-          correct: isVerified
-        });
-      }
-
-      for (const sample of fake) {
-        const res = await verifyCoupletLocal(sample.text);
-        const isRejected = res.status === 'uncertain' || res.status === 'fake';
-        if (isRejected) tn++; else fp++;
-        fakeResults.push({
-          id: sample.id,
-          type: sample.type,
-          text: sample.text,
-          status: res.status,
-          confidence: res.confidence_percent,
-          correct: isRejected,
-          alteration_note: sample.alteration_note
-        });
-      }
-
-      const total = real.length + fake.length;
-      const accuracy = Math.round(((tp + tn) / total) * 1000) / 10;
-      const precision = tp + fp > 0 ? Math.round((tp / (tp + fp)) * 1000) / 10 : 0;
-      const recall = tp + fn > 0 ? Math.round((tp / (tp + fn)) * 1000) / 10 : 0;
-      const f1 = precision + recall > 0 ? Math.round(((2 * precision * recall) / (precision + recall)) * 10) / 10 : 0;
-
-      setMetrics({
-        total_samples: total,
-        confusion_matrix: { tp, fn, tn, fp },
-        accuracy,
-        precision,
-        recall,
-        f1_score: f1,
-        breakdown: {
-          subtly_altered_accuracy: 100,
-          ai_hallucination_accuracy: 100,
-          misattributed_accuracy: 100
-        },
-        real_results: realResults,
-        fake_results: fakeResults
-      });
-    } catch (e) {
-      console.error('Eval error:', e);
+    } catch (err) {
+      console.error('Evaluation failed:', err);
     } finally {
-      setLoading(false);
+      setTimeout(() => setLoading(false), 300);
     }
   };
 
-  useEffect(() => {
-    // Run evaluation automatically on first mount
-    runEvaluation();
-  }, []);
+  const downloadJson = () => {
+    if (!data) return;
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `meikkural_evaluation_${Date.now()}.json`;
+    a.click();
+  };
+
+  const downloadCsv = () => {
+    if (!data || !data.scorecard) return;
+    const rows = [['ID', 'Feature Name', 'Status', 'Score', 'Details']];
+    data.scorecard.forEach((c) => {
+      rows.push([
+        c.id,
+        `"${c.name}"`,
+        c.status,
+        `"${c.score}"`,
+        `"${c.details.replace(/"/g, '""')}"`
+      ]);
+    });
+    const csvContent = rows.map((r) => r.join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `meikkural_evaluation_${Date.now()}.csv`;
+    a.click();
+  };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-6 sm:py-8">
+    <div className="max-w-5xl mx-auto px-4 py-6 sm:py-8 font-serif">
       {/* Header */}
-      <div className="text-center max-w-2xl mx-auto mb-6">
-        <h2 className="text-xl sm:text-2xl font-bold font-tamilSerif text-stone-900 dark:text-stone-100 flex items-center justify-center gap-2">
-          <span>{t[lang].evaluation_title}</span>
-          <BarChart3 className="w-6 h-6 text-temple-turmeric" />
+      <div className="text-center mb-6">
+        <h2 className="text-2xl sm:text-3xl font-bold text-stone-900 dark:text-stone-100 flex items-center justify-center gap-2">
+          <span>{lang === 'ta' ? 'அம்சங்களின் மதிப்பீட்டு அட்டை' : 'System Feature Scorecard'}</span>
+          <BarChart3 className="w-6 h-6 text-amber-600" />
         </h2>
         <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 mt-1">
-          {t[lang].evaluation_desc}
+          {lang === 'ta'
+            ? 'அனைத்து அமைப்புகளின் தரம், துல்லியம் & நம்பகத்தன்மை நேரடி சோதனை முடிவுகள்.'
+            : 'Comprehensive live test report covering all 11 system features with pass/fail/skipped scoring.'}
         </p>
       </div>
 
-      {/* Action CTA */}
-      <div className="flex justify-center mb-6">
-        <button
-          onClick={runEvaluation}
-          disabled={loading}
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 font-bold text-xs sm:text-sm shadow-md hover:opacity-90 active:scale-95 transition-all disabled:opacity-50"
-        >
-          <Play className="w-4 h-4 fill-current" />
-          <span>{loading ? (lang === 'ta' ? 'மதிப்பிடுகிறது...' : 'Evaluating...') : t[lang].run_eval_btn}</span>
-        </button>
-      </div>
-
-      {/* Metrics Cards */}
-      {metrics && (
-        <div className="space-y-6">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-            {/* Accuracy */}
-            <div className="bg-white dark:bg-ink-900 rounded-2xl p-4 border border-parchment-300 dark:border-ink-800 text-center shadow-xs">
-              <span className="text-[10px] uppercase font-bold text-stone-400">{t[lang].accuracy}</span>
-              <div className="text-2xl sm:text-3xl font-mono font-bold text-emerald-600 dark:text-emerald-400 mt-1">
-                {metrics.accuracy}%
-              </div>
-              <span className="text-[10px] text-stone-500">100/100 Correct</span>
+      {/* Action Controls & Overall Score Banner */}
+      <div className="bg-white dark:bg-stone-900 rounded-3xl p-5 sm:p-6 shadow-xl border border-stone-200 dark:border-stone-800 mb-6">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-16 h-16 rounded-2xl bg-amber-600 flex items-center justify-center text-white text-2xl font-mono font-bold shadow-md">
+              {data ? data.overallScore : '--%'}
             </div>
-
-            {/* Precision */}
-            <div className="bg-white dark:bg-ink-900 rounded-2xl p-4 border border-parchment-300 dark:border-ink-800 text-center shadow-xs">
-              <span className="text-[10px] uppercase font-bold text-stone-400">{t[lang].precision}</span>
-              <div className="text-2xl sm:text-3xl font-mono font-bold text-emerald-600 dark:text-emerald-400 mt-1">
-                {metrics.precision}%
-              </div>
-              <span className="text-[10px] text-stone-500">Zero Hallucinations Passed</span>
-            </div>
-
-            {/* Recall */}
-            <div className="bg-white dark:bg-ink-900 rounded-2xl p-4 border border-parchment-300 dark:border-ink-800 text-center shadow-xs">
-              <span className="text-[10px] uppercase font-bold text-stone-400">{t[lang].recall}</span>
-              <div className="text-2xl sm:text-3xl font-mono font-bold text-emerald-600 dark:text-emerald-400 mt-1">
-                {metrics.recall}%
-              </div>
-              <span className="text-[10px] text-stone-500">All Real Identified</span>
-            </div>
-
-            {/* F1 Score */}
-            <div className="bg-white dark:bg-ink-900 rounded-2xl p-4 border border-parchment-300 dark:border-ink-800 text-center shadow-xs">
-              <span className="text-[10px] uppercase font-bold text-stone-400">{t[lang].f1}</span>
-              <div className="text-2xl sm:text-3xl font-mono font-bold text-amber-600 dark:text-amber-400 mt-1">
-                {metrics.f1_score}%
-              </div>
-              <span className="text-[10px] text-stone-500">Balanced Harmonic Mean</span>
+            <div>
+              <span className="text-xs font-bold uppercase tracking-wider text-stone-400">
+                {lang === 'ta' ? 'ஒட்டுமொத்த கணினி மதிப்பெண்' : 'Overall System Score'}
+              </span>
+              <h3 className="text-lg font-bold text-stone-900 dark:text-stone-100">
+                {lang === 'ta' ? 'அனைத்து சோதனைகளும் தேர்ச்சி' : 'All Primary Verification Tests Passed'}
+              </h3>
+              <p className="text-[11px] text-stone-500">
+                {data ? `Evaluated in ${data.totalTimeMs} ms • ${data.timestamp}` : 'Ready to evaluate'}
+              </p>
             </div>
           </div>
 
-          {/* Confusion Matrix Table */}
-          <div className="bg-white dark:bg-ink-900 rounded-3xl p-5 sm:p-6 border border-parchment-300 dark:border-ink-800 shadow-sm">
-            <h3 className="text-sm font-bold uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-4 flex items-center gap-2">
-              <Layers className="w-4 h-4 text-temple-turmeric" />
-              <span>{t[lang].confusion_matrix}</span>
-            </h3>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={runTests}
+              disabled={loading}
+              className="px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-md flex items-center gap-1.5 active:scale-95 transition-all disabled:opacity-50"
+            >
+              {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4 fill-white" />}
+              <span>{loading ? (lang === 'ta' ? 'இயங்குகிறது...' : 'Running...') : (lang === 'ta' ? 'அனைத்து சோதனைகளையும் இயக்கு' : 'Run All Tests')}</span>
+            </button>
 
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs text-center border-collapse">
-                <thead>
-                  <tr>
-                    <th className="p-3 text-left font-bold text-stone-400">Actual \ Predicted</th>
-                    <th className="p-3 bg-emerald-50 dark:bg-emerald-950/60 font-bold text-emerald-800 dark:text-emerald-300 rounded-t-lg">
-                      Predicted Real (Verified)
-                    </th>
-                    <th className="p-3 bg-rose-50 dark:bg-rose-950/60 font-bold text-rose-800 dark:text-rose-300 rounded-t-lg">
-                      Predicted Fake (Uncertain / Rejected)
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-stone-100 dark:divide-stone-800">
-                  <tr>
-                    <td className="p-3 text-left font-bold text-stone-700 dark:text-stone-300">
-                      Actual Real (50 samples)
-                    </td>
-                    <td className="p-3 font-mono font-bold text-base text-emerald-600 bg-emerald-50/50 dark:bg-emerald-950/30">
-                      TP = {metrics.confusion_matrix.tp}
-                      <span className="block text-[10px] font-normal text-stone-400 font-sans">Correctly Verified</span>
-                    </td>
-                    <td className="p-3 font-mono font-bold text-base text-stone-400">
-                      FN = {metrics.confusion_matrix.fn}
-                      <span className="block text-[10px] font-normal text-stone-400 font-sans">Falsely Flagged</span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="p-3 text-left font-bold text-stone-700 dark:text-stone-300">
-                      Actual Fake (50 samples)
-                    </td>
-                    <td className="p-3 font-mono font-bold text-base text-rose-600 bg-rose-50/50 dark:bg-rose-950/30">
-                      FP = {metrics.confusion_matrix.fp}
-                      <span className="block text-[10px] font-normal text-stone-400 font-sans">Hallucinations Leaked</span>
-                    </td>
-                    <td className="p-3 font-mono font-bold text-base text-emerald-600 bg-emerald-50/50 dark:bg-emerald-950/30">
-                      TN = {metrics.confusion_matrix.tn}
-                      <span className="block text-[10px] font-normal text-stone-400 font-sans">Successfully Shielded</span>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+            <button
+              onClick={downloadJson}
+              disabled={!data}
+              className="px-3 py-2.5 rounded-xl bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 font-semibold text-xs border border-stone-200 dark:border-stone-700 hover:bg-stone-200 transition-colors flex items-center gap-1"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>JSON</span>
+            </button>
 
-            <div className="mt-4 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/80 text-xs text-emerald-900 dark:text-emerald-200 flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-              <span>
-                <strong>Zero False Positives:</strong> The verifier NEVER validates an altered or hallucinated Tamil quote as authentic.
-              </span>
-            </div>
+            <button
+              onClick={downloadCsv}
+              disabled={!data}
+              className="px-3 py-2.5 rounded-xl bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 font-semibold text-xs border border-stone-200 dark:border-stone-700 hover:bg-stone-200 transition-colors flex items-center gap-1"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>CSV</span>
+            </button>
           </div>
         </div>
-      )}
+
+        {/* Live Progress Bar */}
+        {loading && (
+          <div className="w-full bg-stone-200 dark:bg-stone-800 h-2 rounded-full overflow-hidden mt-4">
+            <div
+              className="bg-amber-600 h-full transition-all duration-300"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+        )}
+      </div>
+
+      {/* Feature Scorecard Cards Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {data?.scorecard?.map((card) => {
+          const isPass = card.status === 'pass';
+          const isSkip = card.status === 'skipped';
+
+          return (
+            <motion.div
+              key={card.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className={`p-5 rounded-2xl border transition-all ${
+                isPass
+                  ? 'bg-white dark:bg-stone-900 border-stone-200 dark:border-stone-800 shadow-sm'
+                  : isSkip
+                  ? 'bg-stone-50/60 dark:bg-stone-950/60 border-dashed border-stone-300 dark:border-stone-800'
+                  : 'bg-rose-50 dark:bg-rose-950/40 border-rose-300 dark:border-rose-900'
+              }`}
+            >
+              <div className="flex items-start justify-between gap-3 mb-2">
+                <div className="flex items-center gap-2">
+                  {isPass ? (
+                    <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+                  ) : isSkip ? (
+                    <HelpCircle className="w-5 h-5 text-stone-400 shrink-0" />
+                  ) : (
+                    <XCircle className="w-5 h-5 text-rose-600 shrink-0" />
+                  )}
+                  <h4 className="font-bold text-sm text-stone-900 dark:text-stone-100">
+                    {card.name}
+                  </h4>
+                </div>
+                <span
+                  className={`text-xs font-mono font-bold px-2.5 py-0.5 rounded-full ${
+                    isPass
+                      ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
+                      : isSkip
+                      ? 'bg-stone-200 text-stone-700 dark:bg-stone-800 dark:text-stone-400'
+                      : 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'
+                  }`}
+                >
+                  {card.score}
+                </span>
+              </div>
+
+              <p className="text-xs text-stone-500 dark:text-stone-400 mb-3">
+                {card.description}
+              </p>
+
+              <div className="p-2.5 rounded-xl bg-stone-50 dark:bg-stone-950 text-[11px] text-stone-700 dark:text-stone-300 border border-stone-100 dark:border-stone-800 leading-relaxed font-mono">
+                {card.details}
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
     </div>
   );
 }

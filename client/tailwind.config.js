@@ -7,6 +7,9 @@ export default {
   darkMode: 'class',
   theme: {
     extend: {
+      screens: {
+        'xs': '375px',
+      },
       colors: {
         parchment: {
           50: '#FDFBF7',
@@ -38,8 +41,22 @@ export default {
         }
       },
       fontFamily: {
-        tamilSerif: ['"Noto Serif Tamil"', 'serif'],
-        tamilSans: ['"Noto Sans Tamil"', 'sans-serif'],
+        // Times New Roman for English, Noto Serif Tamil fallback for Tamil glyphs
+        serif:      ['"Times New Roman"', 'Times', '"Noto Serif Tamil"', 'serif'],
+        sans:       ['"Times New Roman"', 'Times', '"Noto Serif Tamil"', 'sans-serif'],
+        tamilSerif: ['"Times New Roman"', 'Times', '"Noto Serif Tamil"', 'serif'],
+        tamilSans:  ['"Times New Roman"', 'Times', '"Noto Serif Tamil"', 'sans-serif'],
+        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Consolas', 'monospace'],
+      },
+      fontSize: {
+        'fluid-sm':  ['clamp(0.75rem, 1.5vw, 0.875rem)', { lineHeight: '1.5' }],
+        'fluid-base':['clamp(0.875rem, 2vw, 1rem)',      { lineHeight: '1.6' }],
+        'fluid-lg':  ['clamp(1rem, 2.5vw, 1.25rem)',     { lineHeight: '1.7' }],
+        'fluid-xl':  ['clamp(1.125rem, 3vw, 1.5rem)',    { lineHeight: '1.7' }],
+        'fluid-2xl': ['clamp(1.25rem, 4vw, 2rem)',       { lineHeight: '1.4' }],
+      },
+      lineHeight: {
+        'kural': '1.7',
       },
       boxShadow: {
         'wax-seal': '0 8px 24px -4px rgba(185, 28, 28, 0.4), 0 2px 6px -1px rgba(0, 0, 0, 0.1)',

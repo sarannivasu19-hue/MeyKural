@@ -17,8 +17,12 @@
     "total_cirs": 7
   },
   "app_meta": {
-    "name": "MeyKural",
+    "name": "மெய்க்குறள்",
+    "subtitle": "Meikkural",
+    "logo_mark": "மெ",
     "tagline": "AI Hallucination Shield for Tamil Classical Literature",
-    "edition": "Tamil Hackathon 2026 (Problem P15)"
-  }
+    "edition": "Tamil Hackathon 2026 (Problem P15)",
+    "max_wrong_words": 2
+  },
+  "gemini_model": "gemini-3.5-flash-lite"
 }

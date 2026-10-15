@@ -3,25 +3,25 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/valluvar_seal.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     
     <!-- SEO & Metadata -->
-    <title>மெய்க்குறள் | MeyKural - AI Hallucination Shield for Tamil Literature</title>
+    <title>மெய்க்குறள் (Meikkural)</title>
     <meta name="description" content="Tirukkural quotation verifier. Protect Tamil literary heritage from AI hallucination and falsified quotes with zero-guesswork verification against 1,330 couplets." />
-    <meta name="theme-color" content="#FAF5E8" />
+    <meta name="theme-color" content="#0B1B2B" />
     
     <!-- PWA Manifest & iOS -->
     <link rel="manifest" href="/manifest.json" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="MeyKural" />
+    <meta name="apple-mobile-web-app-title" content="மெய்க்குறள்" />
 
-    <!-- Google Fonts: Noto Serif Tamil & Noto Sans Tamil -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@300;400;500;600;700&family=Noto+Serif+Tamil:ital,wght@0,400;0,600;0,700;0,900;1,400;1,600&display=swap" rel="stylesheet">
+    <!-- Preload Sharp Background Image -->
+    <link rel="preload" as="image" href="/images/bg/bg-1920.webp" type="image/webp" fetchpriority="high" />
+
+    <!-- Fonts self-hosted via @fontsource (imported in main.jsx) — works offline -->
   </head>
-  <body class="bg-parchment-100 text-stone-900 dark:bg-ink-950 dark:text-stone-100 min-h-screen antialiased transition-colors duration-300 font-tamilSans selection:bg-temple-turmeric selection:text-white">
+  <body class="text-stone-100 antialiased font-sans selection:bg-amber-600 selection:text-white m-0 p-0 overflow-x-hidden">
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

@@ -1,7 +1,8 @@
 /**
- * Automated test suite for MeyKural Verification Engine
+ * Automated test suite for மெய்க்குறள் (MeyKural) Strict Verification Engine
+ * Enforces the 3 outcomes: VERIFIED, NEAR MATCH, NOT FOUND.
  */
-const { verifyCouplet, checkVenbaMeter, normalizeTamil, computeWordDiff } = require('../server/verifier');
+const { verifyCouplet, checkVenbaMeter, normalizeTamil } = require('../server/verifier');
 
 function runTests() {
   console.log('🧪 Starting Verification Engine Unit Tests...\n');
@@ -25,8 +26,8 @@ function runTests() {
   assert(normalized === normalized.normalize('NFC'), 'Output must be in canonical Unicode NFC form');
   assert(!/[\u200B-\u200D\uFEFF]/.test(normalized), 'Zero-width whitespace stripped correctly');
 
-  // 2. Exact Match Test (Kural 1)
-  console.log('\n--- Test Suite 2: Exact Authentic Couplet ---');
+  // 2. Exact Match Test (Kural 1) -> VERIFIED
+  console.log('\n--- Test Suite 2: Exact Authentic Couplet (VERIFIED) ---');
   const kural1 = 'அகர முதல எழுத்தெல்லாம் ஆதி\nபகவன் முதற்றே உலகு';
   const res1 = verifyCouplet(kural1);
   assert(res1.status === 'verified', 'Real couplet must return status: "verified"');
@@ -37,26 +38,24 @@ function runTests() {
   assert(res1.word_diff.hasDifferences === false, 'Exact match has 0 differences');
   assert(res1.trusted_site_url.includes('1'), 'Trusted site link must include couplet number');
 
-  // 3. Subtly Altered Couplet Test (Kural 2 with 1 word changed)
-  console.log('\n--- Test Suite 3: Subtly Altered Couplet ---');
+  // 3. 1-2 Words Changed Test -> NEAR MATCH (Incorrect, needs correction)
+  console.log('\n--- Test Suite 3: 1-2 Words Changed (NEAR MATCH) ---');
   const alteredKural2 = 'கற்றதனால் ஆய பயனென்கொல் வாலறிவன்\nபொற்றாள் தொழாஅர் எனின்'; // replaced நற்றாள் with பொற்றாள்
   const res2 = verifyCouplet(alteredKural2);
-  assert(res2.status === 'uncertain', 'Altered couplet must return status: "uncertain"');
-  assert(res2.seal === 'amber_seal', 'Altered couplet must yield amber_seal');
-  assert(res2.trust_gauge === 'suspicious', 'Trust gauge must be "suspicious"');
-  assert(res2.nearest_kural.number === 2, 'Should identify Kural #2 as nearest canonical match');
+  assert(res2.status === 'near_match', '1-2 altered words must return status: "near_match"');
+  assert(res2.verdict === 'Incorrect, needs correction', 'Verdict must be "Incorrect, needs correction"');
+  assert(res2.kural.number === 2, 'Should identify Kural #2 as authentic corrected couplet');
+  assert(res2.wrong_words_count <= 2, 'Wrong words count must be <= 2');
   assert(res2.word_diff.hasDifferences === true, 'Must detect word-level differences');
-  assert(res2.word_diff.differenceCount >= 1, 'Difference count must be >= 1');
 
-  // 4. Fabricated AI Hallucination Test
-  console.log('\n--- Test Suite 4: Fabricated Couplet (AI Hallucination) ---');
+  // 4. Fabricated Couplet (AI Hallucination) -> NOT FOUND
+  console.log('\n--- Test Suite 4: Fabricated Couplet (NOT FOUND) ---');
   const fakeVerse = 'காலம் கருதி கணினியைக் கற்பவர்\nஞாலம் ஆளப் பெறுவார்';
   const res3 = verifyCouplet(fakeVerse);
-  assert(res3.status === 'fake', 'Made-up couplet must return status: "fake"');
+  assert(res3.status === 'not_found', 'Made-up couplet must return status: "not_found"');
+  assert(res3.message === 'Not found. This kural does not exist in the 1,330 Tirukkural couplets.', 'Message must strictly state not found without invented meaning');
+  assert(res3.kural === null, 'Must NOT invent or attach kural data to fake couplet');
   assert(res3.seal === 'red_cracked_seal', 'Fabricated couplet must yield red_cracked_seal');
-  assert(res3.trust_gauge === 'fabricated', 'Trust gauge must be "fabricated"');
-  assert(res3.nearest_kural !== null, 'Must still provide nearest legitimate couplet suggestion');
-  assert(res3.trusted_site_url !== undefined, 'Must provide trusted portal check button');
 
   // 5. Venba Meter Checker Tests
   console.log('\n--- Test Suite 5: Venba Meter Checker ---');
