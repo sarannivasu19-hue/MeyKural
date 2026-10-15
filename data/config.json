@@ -1,0 +1,24 @@
+{
+  "thresholds": {
+    "exact_match": 1.0,
+    "verified_min": 0.88,
+    "uncertain_min": 0.58,
+    "fake_max": 0.58
+  },
+  "trusted_site": {
+    "name": "Tamil Virtual Academy (TVA) / Official Thirukkural Archive",
+    "base_url": "https://thirukkural.gokulnath.com",
+    "search_url_template": "https://thirukkural.gokulnath.com/?kural={number}",
+    "general_portal": "https://www.tamilvu.org/library/l2100/html/l2100ind.htm"
+  },
+  "meter_rules": {
+    "line1_cirs": 4,
+    "line2_cirs": 3,
+    "total_cirs": 7
+  },
+  "app_meta": {
+    "name": "KuralVerify",
+    "tagline": "AI Hallucination Shield for Tamil Classical Literature",
+    "edition": "Tamil Hackathon 2026 (Problem P15)"
+  }
+}

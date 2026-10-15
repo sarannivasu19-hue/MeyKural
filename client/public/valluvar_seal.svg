@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="sealBg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#D97706" />
+      <stop offset="70%" stop-color="#B45309" />
+      <stop offset="100%" stop-color="#78350F" />
+    </radialGradient>
+    <filter id="sealShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <!-- Wax Seal Outer Border -->
+  <circle cx="256" cy="256" r="235" fill="url(#sealBg)" filter="url(#sealShadow)"/>
+  
+  <!-- Outer Kolam Bead Ring -->
+  <circle cx="256" cy="256" r="215" fill="none" stroke="#FEF3C7" stroke-width="4" stroke-dasharray="8 6" opacity="0.8"/>
+  <circle cx="256" cy="256" r="198" fill="none" stroke="#FDE68A" stroke-width="2"/>
+
+  <!-- Palm Leaf Stylized Motif Background -->
+  <path d="M 120 256 Q 256 160 392 256 Q 256 352 120 256 Z" fill="#92400E" opacity="0.4"/>
+  <path d="M 150 256 Q 256 190 362 256 Q 256 322 150 256 Z" fill="#78350F" opacity="0.5"/>
+
+  <!-- Thiruvalluvar Stylized Sage Silhouette & Palm Leaf Stylus (Ezhuthani) -->
+  <!-- Kondai / Top knot -->
+  <ellipse cx="256" cy="150" rx="36" ry="32" fill="#FEF3C7"/>
+  <!-- Head & Profile -->
+  <circle cx="256" cy="180" r="32" fill="#FEF3C7"/>
+  <!-- Beard & Flowing Robe -->
+  <path d="M 230 185 Q 256 250 256 265 Q 256 250 282 185 Q 266 215 256 220 Q 246 215 230 185 Z" fill="#FEF3C7"/>
+  <!-- Shoulders & Shawl -->
+  <path d="M 180 295 Q 210 240 256 240 Q 302 240 332 295 Q 256 320 180 295 Z" fill="#FEF3C7"/>
+  
+  <!-- Palm-leaf Manuscript (Olai Chuvadi) in Hand -->
+  <rect x="186" y="320" width="140" height="26" rx="4" fill="#FDE68A" stroke="#78350F" stroke-width="3"/>
+  <circle cx="216" cy="333" r="3" fill="#78350F"/>
+  <circle cx="296" cy="333" r="3" fill="#78350F"/>
+
+  <!-- Stylus (Ezhuthani) -->
+  <line x1="310" y1="285" x2="335" y2="335" stroke="#FDE68A" stroke-width="5" stroke-linecap="round"/>
+
+  <!-- Circular Tamil Inscription: திருக்குறள் வாய்மை முத்திரை -->
+  <text x="256" y="420" font-family="'Noto Serif Tamil', serif" font-size="28" font-weight="bold" fill="#FEF3C7" text-anchor="middle" letter-spacing="4">
+    குறள் முத்திரை
+  </text>
+  <text x="256" y="450" font-family="'Noto Sans Tamil', sans-serif" font-size="14" font-weight="600" fill="#FDE68A" text-anchor="middle" letter-spacing="2">
+    KURALVERIFY • 1330
+  </text>
+</svg>

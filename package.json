@@ -1,0 +1,33 @@
+{
+  "name": "kuralverify",
+  "version": "1.0.0",
+  "description": "KuralVerify - Mobile-first PWA AI Hallucination Shield for Tamil Classical Literature (Tamil Hackathon 2026, Problem P15)",
+  "main": "server/index.js",
+  "scripts": {
+    "setup": "node scripts/setup.js",
+    "dev": "node scripts/dev.js",
+    "doctor": "node scripts/doctor.js",
+    "evaluate": "node scripts/evaluate.js",
+    "test": "node tests/verifier.test.js",
+    "build": "npm --prefix client run build",
+    "start": "node server/index.js"
+  },
+  "keywords": [
+    "thirukkural",
+    "tamil",
+    "ai-hallucination",
+    "pwa",
+    "offline-first",
+    "nlp",
+    "hackathon-2026"
+  ],
+  "author": "KuralVerify Team",
+  "license": "MIT",
+  "dependencies": {
+    "better-sqlite3": "^12.6.2",
+    "concurrently": "^9.1.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  }
+}

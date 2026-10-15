@@ -1,0 +1,1014 @@
+{
+  "metadata": {
+    "title": "Tamil Hackathon 2026 Problem P15 Evaluation Benchmark",
+    "description": "50 Authentic Tirukkural Couplets + 50 Fabricated/Altered/Misattributed verses for AI Hallucination Shield evaluation.",
+    "total_samples": 100,
+    "real_count": 50,
+    "fake_count": 50,
+    "generated_at": "2026-10-15T06:44:18.428Z"
+  },
+  "real": [
+    {
+      "id": "REAL_001",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 1,
+      "chapter_number": 1,
+      "chapter_name": "கடவுள் வாழ்த்து",
+      "text": "அகர முதல எழுத்தெல்லாம் ஆதி\nபகவன் முதற்றே உலகு",
+      "line1": "அகர முதல எழுத்தெல்லாம் ஆதி",
+      "line2": "பகவன் முதற்றே உலகு",
+      "description": "Authentic Kural #1 from Adhikaram கடவுள் வாழ்த்து"
+    },
+    {
+      "id": "REAL_002",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 2,
+      "chapter_number": 1,
+      "chapter_name": "கடவுள் வாழ்த்து",
+      "text": "கற்றதனால் ஆய பயனென்கொல் வாலறிவன்\nநற்றாள் தொழாஅர் எனின்",
+      "line1": "கற்றதனால் ஆய பயனென்கொல் வாலறிவன்",
+      "line2": "நற்றாள் தொழாஅர் எனின்",
+      "description": "Authentic Kural #2 from Adhikaram கடவுள் வாழ்த்து"
+    },
+    {
+      "id": "REAL_003",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 3,
+      "chapter_number": 1,
+      "chapter_name": "கடவுள் வாழ்த்து",
+      "text": "மலர்மிசை ஏகினான் மாணடி சேர்ந்தார்\nநிலமிசை நீடுவாழ் வார்",
+      "line1": "மலர்மிசை ஏகினான் மாணடி சேர்ந்தார்",
+      "line2": "நிலமிசை நீடுவாழ் வார்",
+      "description": "Authentic Kural #3 from Adhikaram கடவுள் வாழ்த்து"
+    },
+    {
+      "id": "REAL_004",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 10,
+      "chapter_number": 1,
+      "chapter_name": "கடவுள் வாழ்த்து",
+      "text": "பிறவிப் பெருங்கடல் நீந்துவர் நீந்தார்\nஇறைவன் அடிசேரா தார்",
+      "line1": "பிறவிப் பெருங்கடல் நீந்துவர் நீந்தார்",
+      "line2": "இறைவன் அடிசேரா தார்",
+      "description": "Authentic Kural #10 from Adhikaram கடவுள் வாழ்த்து"
+    },
+    {
+      "id": "REAL_005",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 11,
+      "chapter_number": 2,
+      "chapter_name": "வான்சிறப்பு",
+      "text": "வான்நின்று உலகம் வழங்கி வருதலால்\nதான்அமிழ்தம் என்றுணரற் பாற்று",
+      "line1": "வான்நின்று உலகம் வழங்கி வருதலால்",
+      "line2": "தான்அமிழ்தம் என்றுணரற் பாற்று",
+      "description": "Authentic Kural #11 from Adhikaram வான்சிறப்பு"
+    },
+    {
+      "id": "REAL_006",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 25,
+      "chapter_number": 3,
+      "chapter_name": "நீத்தார் பெருமை",
+      "text": "ஐந்தவித்தான் ஆற்றல் அகல்விசும்பு ளார்கோமான்\nஇந்திரனே சாலுங் கரி",
+      "line1": "ஐந்தவித்தான் ஆற்றல் அகல்விசும்பு ளார்கோமான்",
+      "line2": "இந்திரனே சாலுங் கரி",
+      "description": "Authentic Kural #25 from Adhikaram நீத்தார் பெருமை"
+    },
+    {
+      "id": "REAL_007",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 31,
+      "chapter_number": 4,
+      "chapter_name": "அறன் வலியுறுத்தல்",
+      "text": "சிறப்புஈனும் செல்வமும் ஈனும் அறத்தினூஉங்கு\nஆக்கம் எவனோ உயிர்க்கு",
+      "line1": "சிறப்புஈனும் செல்வமும் ஈனும் அறத்தினூஉங்கு",
+      "line2": "ஆக்கம் எவனோ உயிர்க்கு",
+      "description": "Authentic Kural #31 from Adhikaram அறன் வலியுறுத்தல்"
+    },
+    {
+      "id": "REAL_008",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 41,
+      "chapter_number": 5,
+      "chapter_name": "இல்வாழ்க்கை",
+      "text": "இல்வாழ்வான் என்பான் இயல்புடைய மூவர்க்கும்\nநல்லாற்றின் நின்ற துணை",
+      "line1": "இல்வாழ்வான் என்பான் இயல்புடைய மூவர்க்கும்",
+      "line2": "நல்லாற்றின் நின்ற துணை",
+      "description": "Authentic Kural #41 from Adhikaram இல்வாழ்க்கை"
+    },
+    {
+      "id": "REAL_009",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 55,
+      "chapter_number": 6,
+      "chapter_name": "வாழ்க்கைத் துணைநலம்",
+      "text": "தெய்வம் தொழாஅள் கொழுநன் தொழுதெழுவாள்\nபெய்யெனப் பெய்யும் மழை",
+      "line1": "தெய்வம் தொழாஅள் கொழுநன் தொழுதெழுவாள்",
+      "line2": "பெய்யெனப் பெய்யும் மழை",
+      "description": "Authentic Kural #55 from Adhikaram வாழ்க்கைத் துணைநலம்"
+    },
+    {
+      "id": "REAL_010",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 60,
+      "chapter_number": 6,
+      "chapter_name": "வாழ்க்கைத் துணைநலம்",
+      "text": "மங்கலம் என்ப மனைமாட்சி மற்றதன்\nநன்கலம் நன்மக்கட் பேறு",
+      "line1": "மங்கலம் என்ப மனைமாட்சி மற்றதன்",
+      "line2": "நன்கலம் நன்மக்கட் பேறு",
+      "description": "Authentic Kural #60 from Adhikaram வாழ்க்கைத் துணைநலம்"
+    },
+    {
+      "id": "REAL_011",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 71,
+      "chapter_number": 8,
+      "chapter_name": "அன்புடைமை",
+      "text": "அன்பிற்கும் உண்டோ அடைக்குந்தாழ் ஆர்வலர்\nபுன்கணீர் பூசல் தரும்",
+      "line1": "அன்பிற்கும் உண்டோ அடைக்குந்தாழ் ஆர்வலர்",
+      "line2": "புன்கணீர் பூசல் தரும்",
+      "description": "Authentic Kural #71 from Adhikaram அன்புடைமை"
+    },
+    {
+      "id": "REAL_012",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 80,
+      "chapter_number": 8,
+      "chapter_name": "அன்புடைமை",
+      "text": "அன்பின் வழியது உயிர்நிலை அஃதிலார்க்கு\nஎன்புதோல் போர்த்த உடம்பு",
+      "line1": "அன்பின் வழியது உயிர்நிலை அஃதிலார்க்கு",
+      "line2": "என்புதோல் போர்த்த உடம்பு",
+      "description": "Authentic Kural #80 from Adhikaram அன்புடைமை"
+    },
+    {
+      "id": "REAL_013",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 91,
+      "chapter_number": 10,
+      "chapter_name": "இனியவை கூறல்",
+      "text": "இன்சொலால் ஈரம் அளைஇப் படிறுஇலவாம்\nசெம்பொருள் கண்டார்வாய்ச் சொல்",
+      "line1": "இன்சொலால் ஈரம் அளைஇப் படிறுஇலவாம்",
+      "line2": "செம்பொருள் கண்டார்வாய்ச் சொல்",
+      "description": "Authentic Kural #91 from Adhikaram இனியவை கூறல்"
+    },
+    {
+      "id": "REAL_014",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 101,
+      "chapter_number": 11,
+      "chapter_name": "செய்ந்நன்றியறிதல்",
+      "text": "செய்யாமல் செய்த உதவிக்கு வையகமும்\nவானகமும் ஆற்றல் அரிது",
+      "line1": "செய்யாமல் செய்த உதவிக்கு வையகமும்",
+      "line2": "வானகமும் ஆற்றல் அரிது",
+      "description": "Authentic Kural #101 from Adhikaram செய்ந்நன்றியறிதல்"
+    },
+    {
+      "id": "REAL_015",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 110,
+      "chapter_number": 11,
+      "chapter_name": "செய்ந்நன்றியறிதல்",
+      "text": "எந்நன்றி கொன்றார்க்கும் உய்வுண்டாம் உய்வில்லை\nசெய்ந்நன்றி கொன்ற மகற்கு",
+      "line1": "எந்நன்றி கொன்றார்க்கும் உய்வுண்டாம் உய்வில்லை",
+      "line2": "செய்ந்நன்றி கொன்ற மகற்கு",
+      "description": "Authentic Kural #110 from Adhikaram செய்ந்நன்றியறிதல்"
+    },
+    {
+      "id": "REAL_016",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 120,
+      "chapter_number": 12,
+      "chapter_name": "நடுவு நிலைமை",
+      "text": "வாணிகம் செய்வார்க்கு வாணிகம் பேணிப்\nபிறவும் தமபோல் செயின்",
+      "line1": "வாணிகம் செய்வார்க்கு வாணிகம் பேணிப்",
+      "line2": "பிறவும் தமபோல் செயின்",
+      "description": "Authentic Kural #120 from Adhikaram நடுவு நிலைமை"
+    },
+    {
+      "id": "REAL_017",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 131,
+      "chapter_number": 14,
+      "chapter_name": "ஒழுக்கம் உடைமை",
+      "text": "ஒழுக்கம் விழுப்பந் தரலான் ஒழுக்கம்\nஉயிரினும் ஓம்பப் படும்",
+      "line1": "ஒழுக்கம் விழுப்பந் தரலான் ஒழுக்கம்",
+      "line2": "உயிரினும் ஓம்பப் படும்",
+      "description": "Authentic Kural #131 from Adhikaram ஒழுக்கம் உடைமை"
+    },
+    {
+      "id": "REAL_018",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 150,
+      "chapter_number": 15,
+      "chapter_name": "பிறனில் விழையாமை",
+      "text": "அறன்வரையான் அல்ல செயினும் பிறன்வரையாள்\nபெண்மை நயவாமை நன்று",
+      "line1": "அறன்வரையான் அல்ல செயினும் பிறன்வரையாள்",
+      "line2": "பெண்மை நயவாமை நன்று",
+      "description": "Authentic Kural #150 from Adhikaram பிறனில் விழையாமை"
+    },
+    {
+      "id": "REAL_019",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 175,
+      "chapter_number": 18,
+      "chapter_name": "வெஃகாமை",
+      "text": "அஃகி அகன்ற அறிவென்னாம் யார்மாட்டும்\nவெஃகி வெறிய செயின்",
+      "line1": "அஃகி அகன்ற அறிவென்னாம் யார்மாட்டும்",
+      "line2": "வெஃகி வெறிய செயின்",
+      "description": "Authentic Kural #175 from Adhikaram வெஃகாமை"
+    },
+    {
+      "id": "REAL_020",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 200,
+      "chapter_number": 20,
+      "chapter_name": "பயனில சொல்லாமை",
+      "text": "சொல்லுக சொல்லிற் பயனுடைய சொல்லற்க\nசொல்லிற் பயனிலாச் சொல்",
+      "line1": "சொல்லுக சொல்லிற் பயனுடைய சொல்லற்க",
+      "line2": "சொல்லிற் பயனிலாச் சொல்",
+      "description": "Authentic Kural #200 from Adhikaram பயனில சொல்லாமை"
+    },
+    {
+      "id": "REAL_021",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 211,
+      "chapter_number": 22,
+      "chapter_name": "ஒப்புரவறிதல்",
+      "text": "கைம்மாறு வேண்டா கடப்பாடு மாரிமாட்டு\nஎன்ஆற்றுங் கொல்லோ உலகு",
+      "line1": "கைம்மாறு வேண்டா கடப்பாடு மாரிமாட்டு",
+      "line2": "என்ஆற்றுங் கொல்லோ உலகு",
+      "description": "Authentic Kural #211 from Adhikaram ஒப்புரவறிதல்"
+    },
+    {
+      "id": "REAL_022",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 250,
+      "chapter_number": 25,
+      "chapter_name": "அருளுடைமை",
+      "text": "வலியார்முன் தன்னை நினைக்கதான் தன்னின்\nமெலியார்மேல் செல்லு மிடத்து",
+      "line1": "வலியார்முன் தன்னை நினைக்கதான் தன்னின்",
+      "line2": "மெலியார்மேல் செல்லு மிடத்து",
+      "description": "Authentic Kural #250 from Adhikaram அருளுடைமை"
+    },
+    {
+      "id": "REAL_023",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 300,
+      "chapter_number": 30,
+      "chapter_name": "வாய்மை",
+      "text": "யாமெய்யாக் கண்டவற்றுள் இல்லை எனைத்தொன்றும்\nவாய்மையின் நல்ல பிற",
+      "line1": "யாமெய்யாக் கண்டவற்றுள் இல்லை எனைத்தொன்றும்",
+      "line2": "வாய்மையின் நல்ல பிற",
+      "description": "Authentic Kural #300 from Adhikaram வாய்மை"
+    },
+    {
+      "id": "REAL_024",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 331,
+      "chapter_number": 34,
+      "chapter_name": "நிலையாமை",
+      "text": "நில்லாத வற்றை நிலையின என்றுணரும்\nபுல்லறி வாண்மை கடை",
+      "line1": "நில்லாத வற்றை நிலையின என்றுணரும்",
+      "line2": "புல்லறி வாண்மை கடை",
+      "description": "Authentic Kural #331 from Adhikaram நிலையாமை"
+    },
+    {
+      "id": "REAL_025",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 391,
+      "chapter_number": 40,
+      "chapter_name": "கல்வி",
+      "text": "கற்க கசடறக் கற்பவை கற்றபின்\nநிற்க அதற்குத் தக",
+      "line1": "கற்க கசடறக் கற்பவை கற்றபின்",
+      "line2": "நிற்க அதற்குத் தக",
+      "description": "Authentic Kural #391 from Adhikaram கல்வி"
+    },
+    {
+      "id": "REAL_026",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 392,
+      "chapter_number": 40,
+      "chapter_name": "கல்வி",
+      "text": "எண்ணென்ப ஏனை எழுத்தென்ப இவ்விரண்டும்\nகண்ணென்ப வாழும் உயிர்க்கு",
+      "line1": "எண்ணென்ப ஏனை எழுத்தென்ப இவ்விரண்டும்",
+      "line2": "கண்ணென்ப வாழும் உயிர்க்கு",
+      "description": "Authentic Kural #392 from Adhikaram கல்வி"
+    },
+    {
+      "id": "REAL_027",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 400,
+      "chapter_number": 40,
+      "chapter_name": "கல்வி",
+      "text": "கேடில் விழுச்செல்வம் கல்வி யொருவற்கு\nமாடல்ல மற்றை யவை",
+      "line1": "கேடில் விழுச்செல்வம் கல்வி யொருவற்கு",
+      "line2": "மாடல்ல மற்றை யவை",
+      "description": "Authentic Kural #400 from Adhikaram கல்வி"
+    },
+    {
+      "id": "REAL_028",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 450,
+      "chapter_number": 45,
+      "chapter_name": "பெரியாரைத் துணைக்கோடல்",
+      "text": "பல்லார் பகைகொளலிற் பத்தடுத்த தீமைத்தே\nநல்லார் தொடர்கை விடல்",
+      "line1": "பல்லார் பகைகொளலிற் பத்தடுத்த தீமைத்தே",
+      "line2": "நல்லார் தொடர்கை விடல்",
+      "description": "Authentic Kural #450 from Adhikaram பெரியாரைத் துணைக்கோடல்"
+    },
+    {
+      "id": "REAL_029",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 500,
+      "chapter_number": 50,
+      "chapter_name": "இடனறிதல்",
+      "text": "காலாழ் களரில் நரியடும் கண்ணஞ்சா\nவேலாள் முகத்த களிறு",
+      "line1": "காலாழ் களரில் நரியடும் கண்ணஞ்சா",
+      "line2": "வேலாள் முகத்த களிறு",
+      "description": "Authentic Kural #500 from Adhikaram இடனறிதல்"
+    },
+    {
+      "id": "REAL_030",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 550,
+      "chapter_number": 55,
+      "chapter_name": "செங்கோன்மை",
+      "text": "கொலையிற் கொடியாரை வேந்தொறுத்தல் பைங்கூழ்\nகளைகட் டதனொடு நேர்",
+      "line1": "கொலையிற் கொடியாரை வேந்தொறுத்தல் பைங்கூழ்",
+      "line2": "களைகட் டதனொடு நேர்",
+      "description": "Authentic Kural #550 from Adhikaram செங்கோன்மை"
+    },
+    {
+      "id": "REAL_031",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 600,
+      "chapter_number": 60,
+      "chapter_name": "ஊக்கம் உடைமை",
+      "text": "உரமொருவற்கு உள்ள வெறுக்கைஅஃ தில்லார்\nமரம்மக்க ளாதலே வேறு",
+      "line1": "உரமொருவற்கு உள்ள வெறுக்கைஅஃ தில்லார்",
+      "line2": "மரம்மக்க ளாதலே வேறு",
+      "description": "Authentic Kural #600 from Adhikaram ஊக்கம் உடைமை"
+    },
+    {
+      "id": "REAL_032",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 650,
+      "chapter_number": 65,
+      "chapter_name": "சொல்வன்மை",
+      "text": "இணருழ்த்தும் நாறா மலரனையர் கற்றது\nஉணர விரித்துரையா தார்",
+      "line1": "இணருழ்த்தும் நாறா மலரனையர் கற்றது",
+      "line2": "உணர விரித்துரையா தார்",
+      "description": "Authentic Kural #650 from Adhikaram சொல்வன்மை"
+    },
+    {
+      "id": "REAL_033",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 700,
+      "chapter_number": 70,
+      "chapter_name": "மன்னரைச் சேர்ந்து ஒழுகல்",
+      "text": "பழையம் எனக்கருதிப் பண்பல்ல செய்யும்\nகெழுதகைமை கேடு தரும்",
+      "line1": "பழையம் எனக்கருதிப் பண்பல்ல செய்யும்",
+      "line2": "கெழுதகைமை கேடு தரும்",
+      "description": "Authentic Kural #700 from Adhikaram மன்னரைச் சேர்ந்து ஒழுகல்"
+    },
+    {
+      "id": "REAL_034",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 750,
+      "chapter_number": 75,
+      "chapter_name": "அரண்",
+      "text": "எனைமாட்சித் தாகியக் கண்ணும் வினைமாட்சி\nஇல்லார்கண் இல்லது அரண்",
+      "line1": "எனைமாட்சித் தாகியக் கண்ணும் வினைமாட்சி",
+      "line2": "இல்லார்கண் இல்லது அரண்",
+      "description": "Authentic Kural #750 from Adhikaram அரண்"
+    },
+    {
+      "id": "REAL_035",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 800,
+      "chapter_number": 80,
+      "chapter_name": "நட்பாராய்தல்",
+      "text": "மருவுக மாசற்றார் கேண்மைஒன் றீத்தும்\nஒருவுக ஒப்பிலார் நட்பு",
+      "line1": "மருவுக மாசற்றார் கேண்மைஒன் றீத்தும்",
+      "line2": "ஒருவுக ஒப்பிலார் நட்பு",
+      "description": "Authentic Kural #800 from Adhikaram நட்பாராய்தல்"
+    },
+    {
+      "id": "REAL_036",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 850,
+      "chapter_number": 85,
+      "chapter_name": "புல்லறிவாண்மை",
+      "text": "உலகத்தார் உண்டென்பது இல்லென்பான் வையத்து\nஅலகையா வைக்கப் படும்",
+      "line1": "உலகத்தார் உண்டென்பது இல்லென்பான் வையத்து",
+      "line2": "அலகையா வைக்கப் படும்",
+      "description": "Authentic Kural #850 from Adhikaram புல்லறிவாண்மை"
+    },
+    {
+      "id": "REAL_037",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 900,
+      "chapter_number": 90,
+      "chapter_name": "பெரியாரைப் பிழையாமை",
+      "text": "இறந்தமைந்த சார்புடையர் ஆயினும் உய்யார்\nசிறந்தமைந்த சீரார் செறின்",
+      "line1": "இறந்தமைந்த சார்புடையர் ஆயினும் உய்யார்",
+      "line2": "சிறந்தமைந்த சீரார் செறின்",
+      "description": "Authentic Kural #900 from Adhikaram பெரியாரைப் பிழையாமை"
+    },
+    {
+      "id": "REAL_038",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 950,
+      "chapter_number": 95,
+      "chapter_name": "மருந்து",
+      "text": "உற்றவன் தீர்ப்பான் மருந்துழைச் செல்வானென்று\nஅப்பால் நாற்கூற்றே மருந்து",
+      "line1": "உற்றவன் தீர்ப்பான் மருந்துழைச் செல்வானென்று",
+      "line2": "அப்பால் நாற்கூற்றே மருந்து",
+      "description": "Authentic Kural #950 from Adhikaram மருந்து"
+    },
+    {
+      "id": "REAL_039",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 1000,
+      "chapter_number": 100,
+      "chapter_name": "பண்புடைமை",
+      "text": "பண்பிலான் பெற்ற பெருஞ்செல்வம் நன்பால்\nகலந்தீமை யால்திரிந் தற்று",
+      "line1": "பண்பிலான் பெற்ற பெருஞ்செல்வம் நன்பால்",
+      "line2": "கலந்தீமை யால்திரிந் தற்று",
+      "description": "Authentic Kural #1000 from Adhikaram பண்புடைமை"
+    },
+    {
+      "id": "REAL_040",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 1050,
+      "chapter_number": 105,
+      "chapter_name": "நல்குரவு",
+      "text": "துப்புர வில்லார் துவரத் துறவாமை\nஉப்பிற்கும் காடிக்கும் கூற்று",
+      "line1": "துப்புர வில்லார் துவரத் துறவாமை",
+      "line2": "உப்பிற்கும் காடிக்கும் கூற்று",
+      "description": "Authentic Kural #1050 from Adhikaram நல்குரவு"
+    },
+    {
+      "id": "REAL_041",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 1100,
+      "chapter_number": 110,
+      "chapter_name": "குறிப்பறிதல்",
+      "text": "கண்ணொடு கண்இணை நோக்கொக்கின் வாய்ச்சொற்கள்\nஎன்ன பயனும் இல",
+      "line1": "கண்ணொடு கண்இணை நோக்கொக்கின் வாய்ச்சொற்கள்",
+      "line2": "என்ன பயனும் இல",
+      "description": "Authentic Kural #1100 from Adhikaram குறிப்பறிதல்"
+    },
+    {
+      "id": "REAL_042",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 1150,
+      "chapter_number": 115,
+      "chapter_name": "அலர் அறிவுறுத்தல்",
+      "text": "தாம்வேண்டின் நல்குவர் காதலர் யாம்வேண்டும்\nகெளவை எடுக்கும்இவ் வூர்",
+      "line1": "தாம்வேண்டின் நல்குவர் காதலர் யாம்வேண்டும்",
+      "line2": "கெளவை எடுக்கும்இவ் வூர்",
+      "description": "Authentic Kural #1150 from Adhikaram அலர் அறிவுறுத்தல்"
+    },
+    {
+      "id": "REAL_043",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 1200,
+      "chapter_number": 120,
+      "chapter_name": "தனிப்படர் மிகுதி",
+      "text": "உறாஅர்க்கு உறுநோய் உரைப்பாய் கடலைச்\nசெறாஅஅய் வாழிய நெஞ்சு",
+      "line1": "உறாஅர்க்கு உறுநோய் உரைப்பாய் கடலைச்",
+      "line2": "செறாஅஅய் வாழிய நெஞ்சு",
+      "description": "Authentic Kural #1200 from Adhikaram தனிப்படர் மிகுதி"
+    },
+    {
+      "id": "REAL_044",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 1250,
+      "chapter_number": 125,
+      "chapter_name": "நெஞ்சொடு கிளத்தல்",
+      "text": "துன்னாத் துறந்தாரை நெஞ்சத்து உடையேமா\nஇன்னும் இழத்தும் கவின்",
+      "line1": "துன்னாத் துறந்தாரை நெஞ்சத்து உடையேமா",
+      "line2": "இன்னும் இழத்தும் கவின்",
+      "description": "Authentic Kural #1250 from Adhikaram நெஞ்சொடு கிளத்தல்"
+    },
+    {
+      "id": "REAL_045",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 1300,
+      "chapter_number": 130,
+      "chapter_name": "நெஞ்சொடு புலத்தல்",
+      "text": "தஞ்சம் தமரல்லர் ஏதிலார் தாமுடைய\nநெஞ்சம் தமரல் வழி",
+      "line1": "தஞ்சம் தமரல்லர் ஏதிலார் தாமுடைய",
+      "line2": "நெஞ்சம் தமரல் வழி",
+      "description": "Authentic Kural #1300 from Adhikaram நெஞ்சொடு புலத்தல்"
+    },
+    {
+      "id": "REAL_046",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 1310,
+      "chapter_number": 131,
+      "chapter_name": "புலவி",
+      "text": "ஊடல் உணங்க விடுவாரோடு என்நெஞ்சம்\nகூடுவேம் என்பது அவா",
+      "line1": "ஊடல் உணங்க விடுவாரோடு என்நெஞ்சம்",
+      "line2": "கூடுவேம் என்பது அவா",
+      "description": "Authentic Kural #1310 from Adhikaram புலவி"
+    },
+    {
+      "id": "REAL_047",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 1320,
+      "chapter_number": 132,
+      "chapter_name": "புலவி நுணுக்கம்",
+      "text": "நினைத்திருந்து நோக்கினும் காயும் அனைத்துநீர்\nயாருள்ளி நோக்கினீர் என்று",
+      "line1": "நினைத்திருந்து நோக்கினும் காயும் அனைத்துநீர்",
+      "line2": "யாருள்ளி நோக்கினீர் என்று",
+      "description": "Authentic Kural #1320 from Adhikaram புலவி நுணுக்கம்"
+    },
+    {
+      "id": "REAL_048",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 1325,
+      "chapter_number": 133,
+      "chapter_name": "ஊடலுவகை",
+      "text": "தவறிலர் ஆயினும் தாம்வீழ்வார் மென்றோள்\nஅகறலின் ஆங்கொன் றுடைத்து",
+      "line1": "தவறிலர் ஆயினும் தாம்வீழ்வார் மென்றோள்",
+      "line2": "அகறலின் ஆங்கொன் றுடைத்து",
+      "description": "Authentic Kural #1325 from Adhikaram ஊடலுவகை"
+    },
+    {
+      "id": "REAL_049",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 1328,
+      "chapter_number": 133,
+      "chapter_name": "ஊடலுவகை",
+      "text": "ஊடிப் பெறுகுவம் கொல்லோ நுதல்வெயர்ப்பக்\nகூடலில் தோன்றிய உப்பு",
+      "line1": "ஊடிப் பெறுகுவம் கொல்லோ நுதல்வெயர்ப்பக்",
+      "line2": "கூடலில் தோன்றிய உப்பு",
+      "description": "Authentic Kural #1328 from Adhikaram ஊடலுவகை"
+    },
+    {
+      "id": "REAL_050",
+      "type": "real",
+      "expected": "verified",
+      "kural_number": 1330,
+      "chapter_number": 133,
+      "chapter_name": "ஊடலுவகை",
+      "text": "ஊடுதல் காமத்திற்கு இன்பம் அதற்கின்பம்\nகூடி முயங்கப் பெறின்",
+      "line1": "ஊடுதல் காமத்திற்கு இன்பம் அதற்கின்பம்",
+      "line2": "கூடி முயங்கப் பெறின்",
+      "description": "Authentic Kural #1330 from Adhikaram ஊடலுவகை"
+    }
+  ],
+  "fake": [
+    {
+      "id": "FAKE_ALT_001",
+      "type": "subtly_altered",
+      "expected": "uncertain",
+      "text": "அகர முதல எழுத்தெல்லாம் ஆதிபகவன்\nமுதற்றே உலகம்",
+      "base_kural_number": 1,
+      "alteration_note": "Missing word 'முதற்றே' and modified rhythm"
+    },
+    {
+      "id": "FAKE_ALT_002",
+      "type": "subtly_altered",
+      "expected": "uncertain",
+      "text": "கற்றதனால் ஆய பயனென்கொல் வாலறிவன்\nபொற்றாள் தொழாஅர் எனின்",
+      "base_kural_number": 2,
+      "alteration_note": "Word replacement: நற்றாள் -> பொற்றாள்"
+    },
+    {
+      "id": "FAKE_ALT_003",
+      "type": "subtly_altered",
+      "expected": "uncertain",
+      "text": "கற்க கசடறக் கற்பவை கற்றபின்\nநிற்க அதற்குத் தகாத",
+      "base_kural_number": 391,
+      "alteration_note": "Word replacement: தக -> தகாத (inverts moral meaning)"
+    },
+    {
+      "id": "FAKE_ALT_004",
+      "type": "subtly_altered",
+      "expected": "uncertain",
+      "text": "எண்ணென்ப ஏனை எழுத்தென்ப இவ்விரண்டும்\nமனிதர்க்குக் கண்என்ப வாழும் உயிர்க்கு",
+      "base_kural_number": 392,
+      "alteration_note": "Word substitution: கண்ணென்ப -> மனிதர்க்குக் கண்என்ப"
+    },
+    {
+      "id": "FAKE_ALT_005",
+      "type": "subtly_altered",
+      "expected": "uncertain",
+      "text": "சிறப்பீனும் செல்வமும் ஈனும் அறத்தினூங்கு\nஆக்கம் எவனோ உயிர்க்கு",
+      "base_kural_number": 31,
+      "alteration_note": "Word substitution: செல்வமும் -> செல்வமும் ஈனும் duplicate"
+    },
+    {
+      "id": "FAKE_ALT_006",
+      "type": "subtly_altered",
+      "expected": "uncertain",
+      "text": "இல்வாழ்வான் என்பான் இயல்புடைய மூவர்க்கும்\nநல்லாற்றின் நின்ற துணைவன்",
+      "base_kural_number": 41,
+      "alteration_note": "Word substitution: துணை -> துணைவன்"
+    },
+    {
+      "id": "FAKE_ALT_007",
+      "type": "subtly_altered",
+      "expected": "uncertain",
+      "text": "மங்கலம் என்ப மனைமாட்சி மற்றதன்\nபொன்கலம் நன்மக்கட் பேறு",
+      "base_kural_number": 60,
+      "alteration_note": "Word substitution: நன்கலம் -> பொன்கலம்"
+    },
+    {
+      "id": "FAKE_ALT_008",
+      "type": "subtly_altered",
+      "expected": "uncertain",
+      "text": "பாசத்திற்கும் உண்டோ அடைக்குந்தாழ் ஆர்வலர்\nபுண்கணீர் பூசல் தரும்",
+      "base_kural_number": 71,
+      "alteration_note": "Word replacement: அன்பிற்கும் -> பாசத்திற்கும்"
+    },
+    {
+      "id": "FAKE_ALT_009",
+      "type": "subtly_altered",
+      "expected": "uncertain",
+      "text": "செய்யாமல் செய்த உதவிக்கு வானகமும்\nவையகமும் ஆற்றல் அரிது",
+      "base_kural_number": 101,
+      "alteration_note": "Word replacement: வானகமும் வையகமும் order flipped"
+    },
+    {
+      "id": "FAKE_ALT_010",
+      "type": "subtly_altered",
+      "expected": "uncertain",
+      "text": "எந்நன்றி கொன்றார்க்கும் உய்வுண்டாம் உய்வில்லை\nநன்றி மறந்த மனிதர்க்கு",
+      "base_kural_number": 110,
+      "alteration_note": "Modernized vocabulary: மகற்கு -> மனிதர்க்கு"
+    },
+    {
+      "id": "FAKE_ALT_011",
+      "type": "subtly_altered",
+      "expected": "uncertain",
+      "text": "ஒழுக்கம் விழுப்பம் தரலான் ஒழுக்கம்\nஉயிரினும் ஓம்பப் படாதது",
+      "base_kural_number": 131,
+      "alteration_note": "Negation hallucination: படப்படும் -> படாதது"
+    },
+    {
+      "id": "FAKE_ALT_012",
+      "type": "subtly_altered",
+      "expected": "uncertain",
+      "text": "சொல்லுக சொல்லில் பயனுடைய சொல்லற்க\nசொல்லில் பயனிலா மொழி",
+      "base_kural_number": 200,
+      "alteration_note": "Synonym substitution: சொல் -> மொழி"
+    },
+    {
+      "id": "FAKE_ALT_013",
+      "type": "subtly_altered",
+      "expected": "uncertain",
+      "text": "கைம்மாறு வேண்டா கடப்பாடு மாரிமாட்டு\nஎன்ன செய்யும் உலகினர்",
+      "base_kural_number": 211,
+      "alteration_note": "Colloquial modernization: என்ன செய்யும் உலகினர்"
+    },
+    {
+      "id": "FAKE_ALT_014",
+      "type": "subtly_altered",
+      "expected": "uncertain",
+      "text": "யாதானும் நாடாமல் ஊராமல் என்னொருவன்\nசாந்துணையும் கல்லாத வாறு",
+      "base_kural_number": 300,
+      "alteration_note": "Grammar alteration: நாடாமல் ஊராமல்"
+    },
+    {
+      "id": "FAKE_ALT_015",
+      "type": "subtly_altered",
+      "expected": "uncertain",
+      "text": "நெருநல் உளனொருவன் இன்றில்லை என்னும்\nசிறுமை உடைத்துஇவ் வுலகு",
+      "base_kural_number": 331,
+      "alteration_note": "Word replacement: பெருமை -> சிறுமை inverted"
+    },
+    {
+      "id": "FAKE_ALT_016",
+      "type": "subtly_altered",
+      "expected": "uncertain",
+      "text": "கேடில் விழுச்செல்வம் கல்வி ஒருவற்கு\nமாடல்ல மற்றை யவைதான்",
+      "base_kural_number": 400,
+      "alteration_note": "Ending syllable pad: யவை -> யவைதான்"
+    },
+    {
+      "id": "FAKE_ALT_017",
+      "type": "subtly_altered",
+      "expected": "uncertain",
+      "text": "கொலையிற் கொடியாரை வேந்தொறுத்தல் பைங்கூழ்\nகளைகட் டதனோடு சமம்",
+      "base_kural_number": 550,
+      "alteration_note": "Sanskrit loanword replacement: நேர் -> சமம்"
+    },
+    {
+      "id": "FAKE_ALT_018",
+      "type": "subtly_altered",
+      "expected": "uncertain",
+      "text": "ஈன்றாள் பசிகாண்பான் ஆயினும் செய்யற்க\nசான்றோர் பழிக்கும் செயல்",
+      "base_kural_number": 650,
+      "alteration_note": "Word substitution: வினை -> செயல்"
+    },
+    {
+      "id": "FAKE_ALT_019",
+      "type": "subtly_altered",
+      "expected": "uncertain",
+      "text": "செய்க செல்வத்தைச் செறுநர் செருக்கறுக்கும்\nஎஃகதனிற் கூரிய தில்",
+      "base_kural_number": 750,
+      "alteration_note": "Word replacement: பொருளை -> செல்வத்தை"
+    },
+    {
+      "id": "FAKE_ALT_020",
+      "type": "subtly_altered",
+      "expected": "uncertain",
+      "text": "கண்ணுள்ளின் போகா இமைப்பின் கரப்பறியா\nநுண்ணியள் எம்மனைவி காண்",
+      "base_kural_number": 1100,
+      "alteration_note": "AI contextual hallucination: காதலி -> எம்மனைவி"
+    },
+    {
+      "id": "FAKE_GEN_001",
+      "type": "ai_hallucination",
+      "expected": "fake",
+      "text": "கற்றவர் யாவரும் காலத்தின் முன்னிற்கப்\nபெற்றவர் நெஞ்சம் மகிழும்",
+      "base_kural_number": null,
+      "alteration_note": "LLM generated Venba hallucination on Education"
+    },
+    {
+      "id": "FAKE_GEN_002",
+      "type": "ai_hallucination",
+      "expected": "fake",
+      "text": "அன்பும் அறனும் அறிவும் உடையார்க்குத்\nதுன்பம் ஒருபோதும் இல்லை",
+      "base_kural_number": null,
+      "alteration_note": "AI moralizing proverb formatted as Kural"
+    },
+    {
+      "id": "FAKE_GEN_003",
+      "type": "ai_hallucination",
+      "expected": "fake",
+      "text": "பொய்யாமை என்னும் புகழுடைமை போற்றிடினும்\nமெய்யாமை வெல்லும் வினை",
+      "base_kural_number": null,
+      "alteration_note": "AI pseudo-Tirukkural wordplay on Truth"
+    },
+    {
+      "id": "FAKE_GEN_004",
+      "type": "ai_hallucination",
+      "expected": "fake",
+      "text": "இல்லறம் பேணி இயற்கையோடு வாழ்பவர்\nநல்லறம் கண்ட தலைவர்",
+      "base_kural_number": null,
+      "alteration_note": "AI eco-friendly life couplet hallucination"
+    },
+    {
+      "id": "FAKE_GEN_005",
+      "type": "ai_hallucination",
+      "expected": "fake",
+      "text": "காலம் கருதி கணினியைக் கற்பவர்\nஞாலம் ஆளப் பெறுவார்",
+      "base_kural_number": null,
+      "alteration_note": "Anachronistic AI fabrication introducing computer/kannini"
+    },
+    {
+      "id": "FAKE_GEN_006",
+      "type": "ai_hallucination",
+      "expected": "fake",
+      "text": "தாயிற் சிறந்த தயவான தெய்வம்\nஆயிரத் தாண்டிலும் இல்லை",
+      "base_kural_number": null,
+      "alteration_note": "Colloquial Tamil lyric disguised as Kural"
+    },
+    {
+      "id": "FAKE_GEN_007",
+      "type": "ai_hallucination",
+      "expected": "fake",
+      "text": "நட்பும் பகையும் நமக்குள் அடங்கிடின்\nவெற்றி நமதாகும் என்று",
+      "base_kural_number": null,
+      "alteration_note": "AI inspirational couplet mimicry"
+    },
+    {
+      "id": "FAKE_GEN_008",
+      "type": "ai_hallucination",
+      "expected": "fake",
+      "text": "செல்வம் பெருகினும் செருக்கு அடையாதவர்\nகல்வி சிறந்தவர் தாம்",
+      "base_kural_number": null,
+      "alteration_note": "AI pseudo-moral verse on Wealth"
+    },
+    {
+      "id": "FAKE_GEN_009",
+      "type": "ai_hallucination",
+      "expected": "fake",
+      "text": "வாழும் உயிர்க்கெல்லாம் வழிகாட்டும் வள்ளுவர்\nகோலும் குடையும் சமம்",
+      "base_kural_number": null,
+      "alteration_note": "Self-referential AI fabrication claiming to be Kural"
+    },
+    {
+      "id": "FAKE_GEN_010",
+      "type": "ai_hallucination",
+      "expected": "fake",
+      "text": "எண்ணும் எழுத்தும் இணையத்தில் சேர்ப்பவர்\nகண்ணென வாழ்வார் புவி",
+      "base_kural_number": null,
+      "alteration_note": "Anachronistic AI hallucination introducing Internet/Inaiyam"
+    },
+    {
+      "id": "FAKE_GEN_011",
+      "type": "ai_hallucination",
+      "expected": "fake",
+      "text": "உழைப்பே உயர்வு தரும்என்று உரைப்பவர்\nபிழைப்பின்றி வாழ்வார் நிலத்து",
+      "base_kural_number": null,
+      "alteration_note": "Modern labor slogan formatted as 7-word couplet"
+    },
+    {
+      "id": "FAKE_GEN_012",
+      "type": "ai_hallucination",
+      "expected": "fake",
+      "text": "பொறுத்தார் பூமி ஆள்வார் எனினும்\nஅறுத்தார் அடைவார் அவலம்",
+      "base_kural_number": null,
+      "alteration_note": "Tamil proverb blended with AI rhyming line"
+    },
+    {
+      "id": "FAKE_GEN_013",
+      "type": "ai_hallucination",
+      "expected": "fake",
+      "text": "மண்ணில் பிறந்த மனிதர் எவர்க்கும்\nகண்ணியமே மூலதனம் காண்",
+      "base_kural_number": null,
+      "alteration_note": "Modern Tamil verse on Dignity as capital"
+    },
+    {
+      "id": "FAKE_GEN_014",
+      "type": "ai_hallucination",
+      "expected": "fake",
+      "text": "அன்னையும் பிதாவும் அடிபணிந்து போற்றுவோர்\nமுன்னே நடக்கும் அறம்",
+      "base_kural_number": null,
+      "alteration_note": "Konrai Vendhan concept masked into Kural format"
+    },
+    {
+      "id": "FAKE_GEN_015",
+      "type": "ai_hallucination",
+      "expected": "fake",
+      "text": "தீதும் நன்றும் பிறர்தர வாரா\nமாதரார் போற்றும் மனம்",
+      "base_kural_number": null,
+      "alteration_note": "Purananuru quote mangled into second line fabrication"
+    },
+    {
+      "id": "FAKE_MIS_001",
+      "type": "misattributed_literature",
+      "expected": "fake",
+      "text": "அறம் செய்ய விரும்பு ஆறுவது சினம்\nஇயல்வது கரவேல் ஈவது விலக்கேல்",
+      "base_kural_number": null,
+      "alteration_note": "Avvaiyar Aathichudi misattributed to Tirukkural"
+    },
+    {
+      "id": "FAKE_MIS_002",
+      "type": "misattributed_literature",
+      "expected": "fake",
+      "text": "சென்றிடுவீர் எட்டுத் திக்கும் கலைச் செல்வங்கள்\nயாவும் கொணர்ந்திங்கு சேர்ப்பீர்",
+      "base_kural_number": null,
+      "alteration_note": "Mahakavi Bharathiyar poem misattributed to Tirukkural"
+    },
+    {
+      "id": "FAKE_MIS_003",
+      "type": "misattributed_literature",
+      "expected": "fake",
+      "text": "யாதும் ஊரே யாவரும் கேளிர் தீதும்\nநன்றும் பிறர்தர வாரா",
+      "base_kural_number": null,
+      "alteration_note": "Kaniyan Pungundranar Purananuru 192 misattributed to Kural"
+    },
+    {
+      "id": "FAKE_MIS_004",
+      "type": "misattributed_literature",
+      "expected": "fake",
+      "text": "தமிழுக்கும் அமுதென்று பேர் அந்தத் தமிழ்\nஇன்பத் தமிழ்எங்கள் உயிருக்கு நேர்",
+      "base_kural_number": null,
+      "alteration_note": "Pavendhar Bharathidasan poem misattributed to Kural"
+    },
+    {
+      "id": "FAKE_MIS_005",
+      "type": "misattributed_literature",
+      "expected": "fake",
+      "text": "உடம்பார் அழியின் உயிரார் அழிவர்\nதிடம்பட மெய்ஞ்ஞானம் சேரவும் மாட்டார்",
+      "base_kural_number": null,
+      "alteration_note": "Thirumoolar Thirumandhiram misattributed to Tirukkural"
+    },
+    {
+      "id": "FAKE_MIS_006",
+      "type": "misattributed_literature",
+      "expected": "fake",
+      "text": "தித்திக்கும் தெள்ளமுதாய் தெள்ளமுதின் மேலான\nமுத்திக் கனியேஎன் முத்தமிழே",
+      "base_kural_number": null,
+      "alteration_note": "Tamil Vidu Thoothu invocatory verse"
+    },
+    {
+      "id": "FAKE_MIS_007",
+      "type": "misattributed_literature",
+      "expected": "fake",
+      "text": "சாதி இரண்டொழிய வேறில்லை சாற்றுங்கால்\nநீதி நெறிநின்ற நெறிஞர்",
+      "base_kural_number": null,
+      "alteration_note": "Avvaiyar Nalvazhi verse"
+    },
+    {
+      "id": "FAKE_MIS_008",
+      "type": "misattributed_literature",
+      "expected": "uncertain",
+      "text": "பொருளல் லவரைப் பொருளாகச் செய்யும்\nபொருளல்ல தில்லை காசு",
+      "base_kural_number": null,
+      "alteration_note": "Slang corruption of Kural 751 with modern slang 'காசு'"
+    },
+    {
+      "id": "FAKE_MIS_009",
+      "type": "misattributed_literature",
+      "expected": "fake",
+      "text": "வானரங்கள் கனி கொடுத்து மந்தியொடு கொஞ்சும்\nகானவர்கள் விழி எறிந்து வானவர்கள் நாணும்",
+      "base_kural_number": null,
+      "alteration_note": "Kutralak Kuravanji lyric"
+    },
+    {
+      "id": "FAKE_MIS_010",
+      "type": "misattributed_literature",
+      "expected": "fake",
+      "text": "ஒன்றுபட்டால் உண்டு வாழ்வே நம்மில்\nஒற்றுமை நீங்கில் அனைவர்க்கும் தாழ்வே",
+      "base_kural_number": null,
+      "alteration_note": "Bharathiyar unity verse misattributed to Kural"
+    },
+    {
+      "id": "FAKE_MIS_011",
+      "type": "misattributed_literature",
+      "expected": "fake",
+      "text": "ஓடி விளையாடு பாப்பா நீ ஓய்ந்திருக்க\nலாகாது பாப்பா கூடி விளையாடு",
+      "base_kural_number": null,
+      "alteration_note": "Bharathiyar Paappa Paattu"
+    },
+    {
+      "id": "FAKE_MIS_012",
+      "type": "misattributed_literature",
+      "expected": "fake",
+      "text": "நன்றி ஒருவருக்குச் செய்தக்கால் அந்நன்றி\nஎன்று தருங்கொல் எனவேண்டா",
+      "base_kural_number": null,
+      "alteration_note": "Moothurai verse by Avvaiyar"
+    },
+    {
+      "id": "FAKE_MIS_013",
+      "type": "misattributed_literature",
+      "expected": "fake",
+      "text": "வாடிய பயிரைக் கண்டபோதெல்லாம் வாடினேன்\nபசியினால் இளைத்தே வீடுதோறும்",
+      "base_kural_number": null,
+      "alteration_note": "Vallalar Ramalinga Adigal Thiruvarutpa"
+    },
+    {
+      "id": "FAKE_MIS_014",
+      "type": "misattributed_literature",
+      "expected": "uncertain",
+      "text": "பிறப்பொக்கும் எல்லா உயிர்க்கும் சிறப்பொவ்வா\nசாதிகள் இல்லை உலகில்",
+      "base_kural_number": null,
+      "alteration_note": "Modified Kural 972 ending with political slogan"
+    },
+    {
+      "id": "FAKE_MIS_015",
+      "type": "misattributed_literature",
+      "expected": "fake",
+      "text": "கற்கை நன்றே கற்கை நன்றே\nபிச்சை புகினும் கற்கை நன்றே",
+      "base_kural_number": null,
+      "alteration_note": "Vetri Verkai (Athiveerarama Pandiyar) quotation"
+    }
+  ]
+}
