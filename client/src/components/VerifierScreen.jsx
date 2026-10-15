@@ -143,7 +143,7 @@ export default function VerifierScreen({ lang = 'ta' }) {
 
   const copyResult = () => {
     if (!result) return;
-    const textToCopy = `KuralVerify: ${result.verdict} (${result.confidence_percent}% match)\nInput: ${inputText}\nNearest: Kural #${result.nearest_kural?.number || result.kural?.number}`;
+    const textToCopy = `MeyKural: ${result.verdict} (${result.confidence_percent}% match)\nInput: ${inputText}\nNearest: Kural #${result.nearest_kural?.number || result.kural?.number}`;
     navigator.clipboard.writeText(textToCopy);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);

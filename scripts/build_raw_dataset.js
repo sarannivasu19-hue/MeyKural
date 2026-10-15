@@ -45,7 +45,7 @@ const LINE_FIXES = {
 async function fetchWithRetry(url, retries = 2) {
   for (let i = 0; i <= retries; i++) {
     try {
-      const res = await fetch(url, { headers: { 'User-Agent': 'KuralVerify-Setup/1.0' } });
+      const res = await fetch(url, { headers: { 'User-Agent': 'MeyKural-Setup/1.0' } });
       if (res.ok) {
         return await res.json();
       }

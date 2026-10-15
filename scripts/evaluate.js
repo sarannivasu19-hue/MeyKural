@@ -1,5 +1,5 @@
 /**
- * KuralVerify Benchmark Evaluation Runner
+ * MeyKural Benchmark Evaluation Runner
  * Evaluates the 50 Real + 50 Fake couplets dataset.
  * Computes Accuracy, Precision, Recall, F1 Score, and Confusion Matrix.
  */
@@ -114,7 +114,7 @@ function runEvaluation() {
 function printReport(metrics) {
   const { tp, fn, tn, fp } = metrics.confusion_matrix;
   console.log('\n================================================================');
-  console.log('🏆 KURALVERIFY BENCHMARK EVALUATION (50 REAL + 50 FAKE COUPLETS)');
+  console.log('🏆 MEYKURAL BENCHMARK EVALUATION (50 REAL + 50 FAKE COUPLETS)');
   console.log('================================================================');
   console.log(`• Overall Accuracy:    ${metrics.accuracy}%`);
   console.log(`• Precision:           ${metrics.precision}% (Zero false authentications)`);

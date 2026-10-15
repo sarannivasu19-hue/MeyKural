@@ -66,7 +66,7 @@ export default function Navbar({
             </div>
             <div>
               <div className="font-tamilSerif font-bold text-lg leading-tight tracking-tight text-stone-900 dark:text-stone-50 flex items-center gap-1.5">
-                <span>{lang === 'ta' ? 'குறள் சரிபார்ப்பு' : 'KuralVerify'}</span>
+                <span>{lang === 'ta' ? 'மெய்க்குறள்' : 'MeyKural'}</span>
                 <span className="text-[10px] font-sans px-1.5 py-0.5 rounded bg-amber-200/60 dark:bg-amber-950/60 text-amber-900 dark:text-amber-300 border border-amber-300/60 font-semibold">
                   P15
                 </span>

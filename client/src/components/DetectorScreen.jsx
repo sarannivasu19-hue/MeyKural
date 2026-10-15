@@ -77,7 +77,7 @@ export default function DetectorScreen({ lang = 'ta', onSelectForVerify }) {
         <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 mt-1">
           {lang === 'ta'
             ? 'AI மொழியமைப்புகள் (LLMs) ஏன் போலியான தமிழ் மேற்கோள்களை உருவாக்குகின்றன? அவற்றின் நுட்பங்களை இங்கே ஆராயுங்கள்.'
-            : 'How and why AI hallucinated quotations threaten Tamil cultural integrity, and how KuralVerify shields against them.'}
+            : 'How and why AI hallucinated quotations threaten Tamil cultural integrity, and how MeyKural shields against them.'}
         </p>
       </div>
 

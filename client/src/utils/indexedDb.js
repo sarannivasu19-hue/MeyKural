@@ -2,7 +2,7 @@
  * IndexedDB storage for 1,330 Kurals and Chapters
  * Enables full offline-first functionality in PWA.
  */
-const DB_NAME = 'kuralverify_offline_db';
+const DB_NAME = 'meykural_offline_db';
 const DB_VERSION = 1;
 const STORE_NAME = 'bundle';
 

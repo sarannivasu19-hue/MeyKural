@@ -1,5 +1,5 @@
 /**
- * SQLite Database Access Layer for KuralVerify
+ * SQLite Database Access Layer for MeyKural
  */
 const path = require('path');
 const Database = require('better-sqlite3');

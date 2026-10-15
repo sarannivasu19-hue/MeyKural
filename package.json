@@ -1,7 +1,7 @@
 {
-  "name": "kuralverify",
+  "name": "meykural",
   "version": "1.0.0",
-  "description": "KuralVerify - Mobile-first PWA AI Hallucination Shield for Tamil Classical Literature (Tamil Hackathon 2026, Problem P15)",
+  "description": "MeyKural - Mobile-first PWA AI Hallucination Shield for Tamil Classical Literature (Tamil Hackathon 2026, Problem P15)",
   "main": "server/index.js",
   "scripts": {
     "setup": "node scripts/setup.js",
@@ -21,7 +21,7 @@
     "nlp",
     "hackathon-2026"
   ],
-  "author": "KuralVerify Team",
+  "author": "MeyKural Team",
   "license": "MIT",
   "dependencies": {
     "better-sqlite3": "^12.6.2",

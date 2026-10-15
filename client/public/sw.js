@@ -1,7 +1,7 @@
 /**
- * KuralVerify Service Worker for 100% Offline Capability
+ * MeyKural Service Worker for 100% Offline Capability
  */
-const CACHE_NAME = 'kuralverify-cache-v1';
+const CACHE_NAME = 'meykural-cache-v1';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',

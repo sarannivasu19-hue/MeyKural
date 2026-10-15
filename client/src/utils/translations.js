@@ -3,7 +3,7 @@
  */
 export const t = {
   ta: {
-    app_title: 'குறள் சரிபார்ப்பு',
+    app_title: 'மெய்க்குறள்',
     app_subtitle: 'தமிழ் இலக்கியத்திற்கான AI போலி மேற்கோள் தடுப்புக் கவசம்',
     nav_verify: 'சரிபார்ப்பி',
     nav_library: 'குறள் நூலகம்',
@@ -59,7 +59,7 @@ export const t = {
     chatbot_disclaimer: 'இந்த AI உள்ளூர் 1,330 குறள்களை மட்டுமே அடிப்படையாகக் கொண்டு பதிலளிக்கும். இல்லாத குறள்களை உருவாக்காது.'
   },
   en: {
-    app_title: 'KuralVerify',
+    app_title: 'MeyKural',
     app_subtitle: 'AI Hallucination Shield for Classical Tamil Literature',
     nav_verify: 'Verifier',
     nav_library: 'Library',

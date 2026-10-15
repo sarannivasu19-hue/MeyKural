@@ -1,5 +1,5 @@
 /**
- * Automated test suite for KuralVerify Verification Engine
+ * Automated test suite for MeyKural Verification Engine
  */
 const { verifyCouplet, checkVenbaMeter, normalizeTamil, computeWordDiff } = require('../server/verifier');
 

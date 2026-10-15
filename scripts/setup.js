@@ -1,5 +1,5 @@
 /**
- * One-Command Setup Script for KuralVerify
+ * One-Command Setup Script for MeyKural
  * 1. Checks and initializes .env from .env.example (with interactive key prompt if TTY).
  * 2. Fetches/validates canonical 1,330 couplets (HuggingFace + fallback).
  * 3. Populates SQLite database & precomputes semantic embeddings.
@@ -67,7 +67,7 @@ async function handleEnvSetup() {
 
 async function main() {
   console.log('\n======================================================');
-  console.log('🚀 KURALVERIFY: AUTOMATED SETUP PIPELINE');
+  console.log('🚀 MEYKURAL: AUTOMATED SETUP PIPELINE');
   console.log('Tamil Hackathon 2026 - Problem P15 AI Quotation Shield');
   console.log('======================================================\n');
 
@@ -98,7 +98,7 @@ async function main() {
     }
 
     console.log('\n======================================================');
-    console.log('🎉 KURALVERIFY SETUP SUCCESSFULLY COMPLETED!');
+    console.log('🎉 MEYKURAL SETUP SUCCESSFULLY COMPLETED!');
     console.log('======================================================');
     console.log('Next steps:');
     console.log('  • npm run dev       -> Start client & backend concurrently');

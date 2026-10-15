@@ -1,5 +1,5 @@
 /**
- * Dev Runner for KuralVerify
+ * Dev Runner for MeyKural
  * Finds free ports, detects local Wi-Fi / LAN IP,
  * prints connection URLs, and concurrently runs Express backend and Vite client.
  */
@@ -47,7 +47,7 @@ async function startDev() {
   const clientPort = await findAvailablePort(5173);
 
   console.log('\n================================================================');
-  console.log('🌿 KURALVERIFY: TAMIL HACKATHON 2026 (PROBLEM P15)');
+  console.log('🌿 MEYKURAL: TAMIL HACKATHON 2026 (PROBLEM P15)');
   console.log('AI Hallucination Shield for Classical Literature');
   console.log('================================================================');
   console.log(`📱 Client App (Local):    http://localhost:${clientPort}`);
@@ -83,7 +83,7 @@ async function startDev() {
   );
 
   const cleanup = () => {
-    console.log('\n🛑 Shutting down KuralVerify dev processes...');
+    console.log('\n🛑 Shutting down MeyKural dev processes...');
     try { serverProcess.kill(); } catch (e) {}
     try { clientProcess.kill(); } catch (e) {}
     process.exit(0);

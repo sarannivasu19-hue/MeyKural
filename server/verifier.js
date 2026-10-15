@@ -1,5 +1,5 @@
 /**
- * KuralVerify Verification Engine
+ * MeyKural Verification Engine
  * Strictly verifies Tamil literary quotations against the 1,330 canonical Tirukkural couplets.
  * Implements Unicode NFC normalization, Venba meter checking, fuzzy matching,
  * semantic cosine similarity, word-level diffing, and confidence scoring.

@@ -1,4 +1,4 @@
-# 🌿 KuralVerify (குறள் சரிபார்ப்பு)
+# 🌿 MeyKural (மெய்க்குறள்)
 ### AI Hallucination Shield for Classical Tamil Literature
 **Tamil Hackathon 2026 — Problem P15 Solution**  
 *"How would you prevent AI from generating false literary quotations in Tamil?"*
@@ -9,8 +9,8 @@
 
 ```bash
 # 1. Clone repository
-git clone https://github.com/your-org/kuralverify.git
-cd kuralverify
+git clone https://github.com/sarannivasu19-hue/MeyKural.git
+cd MeyKural
 
 # 2. One-command automated setup (downloads, validates 1,330 kurals, builds SQLite & embeddings)
 npm run setup
@@ -33,7 +33,7 @@ npm run dev
 Modern Large Language Models (LLMs) frequently fabricate ("hallucinate") non-existent couplets, misattribute poetry from Avvaiyar or Bharathiyar to Tirukkural, or perturb words within authentic verses to alter their moral injunctions.
 
 ### The Rule: It Must NEVER Guess
-`KuralVerify` operates on a strict zero-guesswork verification pipeline against the canonical 1,330 couplets of Tirukkural:
+`MeyKural` operates on a strict zero-guesswork verification pipeline against the canonical 1,330 couplets of Tirukkural:
 1. **Verified (Authentic)**: Matches a canonical couplet with 100% confidence. Awarded the animated **Green Valluvar Seal** and Authentic Trust Gauge.
 2. **Uncertain (Altered Verse)**: High similarity to a real couplet, but with 1–3 altered words or rhyming perturbations. Awarded the **Amber Seal**, **Word-level Diff Highlighting** (red for altered, green for original), a warning to *"Consult a human expert"*, and a direct link to verify on official archives.
 3. **Not in Tirukkural (Fake / Fabricated)**: Made-up verse or misattributed poetry. Awarded the animated **Red Cracked Seal**, displays the nearest legitimate couplet with similarity score, and provides a direct link to the official Tamil Virtual Academy archive.

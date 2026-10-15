@@ -1,5 +1,5 @@
 /**
- * KuralVerify Doctor - Diagnostics & Health Audit
+ * MeyKural Doctor - Diagnostics & Health Audit
  * Validates Node version, environment variables, SQLite database,
  * raw dataset, embeddings, client bundle, and tells you exactly what to fix.
  */
@@ -17,7 +17,7 @@ const TEST_FILE = path.join(ROOT_DIR, 'data', 'test_set', 'evaluation_dataset.js
 
 function runDoctor() {
   console.log('\n======================================================');
-  console.log('🩺 KURALVERIFY SYSTEM DIAGNOSTICS & DOCTOR');
+  console.log('🩺 MEYKURAL SYSTEM DIAGNOSTICS & DOCTOR');
   console.log('======================================================\n');
 
   const issues = [];

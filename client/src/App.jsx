@@ -90,7 +90,7 @@ export default function App() {
               <img src="/valluvar_seal.svg" alt="Seal" className="w-full h-full object-contain" />
             </div>
             <span className="font-tamilSerif font-bold text-stone-700 dark:text-stone-300">
-              {lang === 'ta' ? 'குறள் சரிபார்ப்பு • KuralVerify' : 'KuralVerify • Tirukkural AI Shield'}
+              {lang === 'ta' ? 'மெய்க்குறள் • MeyKural' : 'MeyKural • Tirukkural AI Shield'}
             </span>
           </div>
           <div>

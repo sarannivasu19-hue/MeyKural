@@ -1,5 +1,5 @@
 /**
- * KuralVerify Express Server
+ * MeyKural Express Server
  * Serves APIs for verification, couplet database, benchmark evaluation,
  * and LLM RAG proxy.
  */
@@ -138,7 +138,7 @@ if (fs.existsSync(clientDist)) {
 
 function startServer(portToUse = PORT) {
   const server = app.listen(portToUse, '0.0.0.0', () => {
-    console.log(`🚀 KuralVerify Server running on http://localhost:${portToUse}`);
+    console.log(`🚀 MeyKural Server running on http://localhost:${portToUse}`);
   });
   return server;
 }
