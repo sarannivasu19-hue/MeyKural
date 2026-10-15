@@ -67,14 +67,15 @@ export default function DetectorScreen({ lang = 'ta', onSelectForVerify }) {
   ];
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-6 sm:py-8">
+  return (
+    <div className="max-w-4xl mx-auto px-4 py-6 sm:py-8 font-sans">
       {/* Header */}
       <div className="text-center max-w-2xl mx-auto mb-8">
-        <h2 className="text-xl sm:text-2xl font-bold font-tamilSerif text-stone-900 dark:text-stone-100 flex items-center justify-center gap-2">
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white flex items-center justify-center gap-2">
           <span>{t[lang].nav_detector}</span>
-          <ShieldAlert className="w-6 h-6 text-rose-600" />
+          <ShieldAlert className="w-6 h-6 text-orange-400" />
         </h2>
-        <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 mt-1">
+        <p className="text-xs sm:text-sm text-stone-300 mt-1">
           {lang === 'ta'
             ? 'AI மொழியமைப்புகள் (LLMs) ஏன் போலியான தமிழ் மேற்கோள்களை உருவாக்குகின்றன? அவற்றின் நுட்பங்களை இங்கே ஆராயுங்கள்.'
             : 'How and why AI hallucinated quotations threaten Tamil cultural integrity, and how MeyKural shields against them.'}
@@ -82,26 +83,26 @@ export default function DetectorScreen({ lang = 'ta', onSelectForVerify }) {
       </div>
 
       {/* Anatomy of an AI Tamil Hallucination Banner */}
-      <div className="bg-gradient-to-br from-rose-50 to-amber-50 dark:from-stone-900 dark:to-stone-950 rounded-3xl p-6 border border-rose-200 dark:border-rose-900/60 mb-8 shadow-sm">
-        <h3 className="text-sm font-bold uppercase tracking-wider text-rose-900 dark:text-rose-300 flex items-center gap-2 mb-3">
-          <Cpu className="w-4 h-4 text-rose-600" />
+      <div className="bg-[#0D1522]/90 backdrop-blur-2xl rounded-3xl p-6 border border-white/10 mb-8 shadow-2xl text-stone-100">
+        <h3 className="text-sm font-bold uppercase tracking-wider text-orange-400 flex items-center gap-2 mb-3">
+          <Cpu className="w-4 h-4 text-orange-400" />
           <span>{lang === 'ta' ? 'AI ஏன் போலி மேற்கோள்களை உருவாக்குகிறது?' : 'The Anatomy of Tamil AI Hallucination'}</span>
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-stone-700 dark:text-stone-300">
-          <div className="bg-white/80 dark:bg-stone-900/80 p-3.5 rounded-xl border border-rose-100 dark:border-stone-800">
-            <div className="font-bold text-stone-900 dark:text-stone-100 mb-1">1. Tokenizer Disconnect</div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-stone-300">
+          <div className="bg-[#070C15]/80 p-3.5 rounded-xl border border-white/10">
+            <div className="font-bold text-white mb-1">1. Tokenizer Disconnect</div>
             <p className="opacity-90 leading-relaxed">
               Tamil letters decompose across subword tokens. LLMs predict plausible next tokens without checking classical canonical databases.
             </p>
           </div>
-          <div className="bg-white/80 dark:bg-stone-900/80 p-3.5 rounded-xl border border-rose-100 dark:border-stone-800">
-            <div className="font-bold text-stone-900 dark:text-stone-100 mb-1">2. Venba Meter Blindness</div>
+          <div className="bg-[#070C15]/80 p-3.5 rounded-xl border border-white/10">
+            <div className="font-bold text-white mb-1">2. Venba Meter Blindness</div>
             <p className="opacity-90 leading-relaxed">
               AI mimics 7 words superficially, but fails the strict mathematical talas (Eerasaich seer, Venba rhythm) of Sangam prosody.
             </p>
           </div>
-          <div className="bg-white/80 dark:bg-stone-900/80 p-3.5 rounded-xl border border-rose-100 dark:border-stone-800">
-            <div className="font-bold text-stone-900 dark:text-stone-100 mb-1">3. Lack of Grounded Truth</div>
+          <div className="bg-[#070C15]/80 p-3.5 rounded-xl border border-white/10">
+            <div className="font-bold text-white mb-1">3. Lack of Grounded Truth</div>
             <p className="opacity-90 leading-relaxed">
               Standard chatbots answer questions by statistical probability, inventing fake citations with confidence rather than verifying.
             </p>
@@ -114,42 +115,42 @@ export default function DetectorScreen({ lang = 'ta', onSelectForVerify }) {
         {fakeExamples.map((item) => (
           <div
             key={item.id}
-            className="bg-white dark:bg-ink-900 rounded-2xl p-5 border border-stone-200 dark:border-ink-800 shadow-sm hover:border-rose-400 dark:hover:border-rose-700 transition-all"
+            className="bg-[#0D1522]/90 backdrop-blur-xl rounded-2xl p-5 border border-white/10 shadow-xl hover:border-orange-500/50 transition-all text-stone-100"
           >
-            <div className="flex items-center justify-between border-b border-stone-100 dark:border-stone-800 pb-2 mb-3">
-              <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-rose-900">
+            <div className="flex items-center justify-between border-b border-white/10 pb-2 mb-3">
+              <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-rose-950 text-rose-300 border border-rose-500/40">
                 {item.category}
               </span>
-              <span className="text-xs font-mono font-bold text-rose-600 dark:text-rose-400">
+              <span className="text-xs font-mono font-bold text-rose-400">
                 {item.badge}
               </span>
             </div>
 
             {/* Fake Quote */}
-            <div className="text-center my-3 py-3 bg-rose-50/40 dark:bg-rose-950/20 rounded-xl border border-rose-200/50 dark:border-rose-900/40">
-              <div className="font-tamilSerif text-base sm:text-lg font-bold text-rose-950 dark:text-rose-200 leading-relaxed whitespace-pre-line">
+            <div className="text-center my-3 py-3 bg-[#070C15]/80 rounded-xl border border-rose-500/30">
+              <div className="font-serif text-base sm:text-lg font-bold text-rose-200 leading-relaxed whitespace-pre-line">
                 "{item.quote}"
               </div>
             </div>
 
             {/* Why Fake Explanation */}
-            <div className="text-xs text-stone-700 dark:text-stone-300 space-y-1.5 mt-3 pt-2">
+            <div className="text-xs text-stone-300 space-y-1.5 mt-3 pt-2">
               <p>
-                <strong className="text-stone-900 dark:text-stone-100">
+                <strong className="text-orange-400">
                   {lang === 'ta' ? 'போலி என்பதற்கான சான்று:' : 'Hallucination Evidence:'}
                 </strong>{' '}
                 {item.whyFake}
               </p>
-              <p className="text-stone-500 dark:text-stone-400">
-                <strong>{lang === 'ta' ? 'அசல் தொடர்பு:' : 'Canonical Reference:'}</strong> {item.nearest}
+              <p className="text-stone-400">
+                <strong className="text-stone-300">{lang === 'ta' ? 'அசல் தொடர்பு:' : 'Canonical Reference:'}</strong> {item.nearest}
               </p>
             </div>
 
             {/* Test in Verifier CTA */}
-            <div className="mt-4 pt-3 border-t border-stone-100 dark:border-stone-800 flex justify-end">
+            <div className="mt-4 pt-3 border-t border-white/10 flex justify-end">
               <button
                 onClick={() => onSelectForVerify(item.quote)}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-temple-turmeric text-white hover:bg-amber-600 active:scale-95 transition-all shadow-xs"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white active:scale-95 transition-all shadow-md shadow-orange-500/20"
               >
                 <span>{lang === 'ta' ? 'சரிபார்ப்பியில் சோதனை செய்' : 'Test in Verifier'}</span>
                 <ArrowRight className="w-3.5 h-3.5" />

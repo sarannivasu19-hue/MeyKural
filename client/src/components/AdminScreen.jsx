@@ -26,6 +26,8 @@ export default function AdminScreen({ lang = 'ta' }) {
   const [totalLogs, setTotalLogs] = useState(0);
   const [searchLog, setSearchLog] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [page, setPage] = useState(1);
+  const [selectedRecord, setSelectedRecord] = useState(null);
   const [users, setUsers] = useState([]);
   const [settings, setSettings] = useState({
     max_wrong_words: 2,
@@ -43,7 +45,7 @@ export default function AdminScreen({ lang = 'ta' }) {
 
   useEffect(() => {
     fetchStats();
-    fetchLogs();
+    fetchLogs('', '', 1);
     fetchSettings();
     fetchUsers();
   }, []);
@@ -58,11 +60,14 @@ export default function AdminScreen({ lang = 'ta' }) {
     } catch {}
   };
 
-  const fetchLogs = async () => {
+  const fetchLogs = async (overrideStatus, overrideSearch, pageNum = 1) => {
     try {
+      const statusToUse = overrideStatus !== undefined ? overrideStatus : statusFilter;
+      const searchToUse = overrideSearch !== undefined ? overrideSearch : searchLog;
       const params = new URLSearchParams();
-      if (searchLog) params.append('search', searchLog);
-      if (statusFilter) params.append('status', statusFilter);
+      if (searchToUse && searchToUse.trim()) params.append('search', searchToUse.trim());
+      if (statusToUse && statusToUse.trim()) params.append('status', statusToUse.trim());
+      params.append('page', String(pageNum));
       params.append('limit', '50');
 
       const res = await fetch(`/api/admin/logs?${params.toString()}`, { credentials: 'include' });
@@ -72,6 +77,18 @@ export default function AdminScreen({ lang = 'ta' }) {
         setTotalLogs(data.total || 0);
       }
     } catch {}
+  };
+
+  const handleStatusChange = (newStatus) => {
+    setStatusFilter(newStatus);
+    setPage(1);
+    fetchLogs(newStatus, searchLog, 1);
+  };
+
+  const handleSearchSubmit = (e) => {
+    if (e) e.preventDefault();
+    setPage(1);
+    fetchLogs(statusFilter, searchLog, 1);
   };
 
   const fetchSettings = async () => {
@@ -155,14 +172,14 @@ export default function AdminScreen({ lang = 'ta' }) {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-6 sm:py-8 font-serif">
+    <div className="max-w-6xl mx-auto px-4 py-6 sm:py-8 font-sans">
       {/* Admin Header */}
       <div className="text-center mb-6">
-        <h2 className="text-2xl sm:text-3xl font-bold text-stone-900 dark:text-stone-100 flex items-center justify-center gap-2">
+        <h2 className="text-2xl sm:text-3xl font-bold text-white flex items-center justify-center gap-2">
           <span>{lang === 'ta' ? 'நிர்வாகக் கட்டுப்பாட்டு அறை' : 'Admin Control Dashboard'}</span>
-          <ShieldCheck className="w-6 h-6 text-amber-600" />
+          <ShieldCheck className="w-6 h-6 text-amber-400" />
         </h2>
-        <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 mt-1">
+        <p className="text-xs sm:text-sm text-stone-300 mt-1">
           {lang === 'ta'
             ? 'அமைப்புகள், சரிபார்ப்பு பதிவுகள், பயனர்கள் & AI ஆய்வு மேலாண்மை.'
             : 'MeyKural system management, audit logs, thresholds, and dataset integrity.'}
@@ -170,13 +187,13 @@ export default function AdminScreen({ lang = 'ta' }) {
       </div>
 
       {/* Navigation Sub-Tabs */}
-      <div className="flex flex-wrap justify-center bg-stone-100 dark:bg-stone-800 p-1 rounded-2xl mb-6 max-w-2xl mx-auto gap-1">
+      <div className="flex flex-wrap justify-center bg-[#0B121E]/90 border border-white/10 p-1.5 rounded-2xl mb-6 max-w-2xl mx-auto gap-1 shadow-lg">
         <button
           onClick={() => setActiveTab('dashboard')}
-          className={`px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
+          className={`px-3 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
             activeTab === 'dashboard'
-              ? 'bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 shadow-sm'
-              : 'text-stone-500 hover:text-stone-800 dark:hover:text-stone-200'
+              ? 'bg-gradient-to-r from-orange-500 to-amber-600 text-white shadow-md'
+              : 'text-stone-300 hover:text-white hover:bg-white/5'
           }`}
         >
           {lang === 'ta' ? 'மேற்பார்வை' : 'Overview'}
@@ -186,20 +203,20 @@ export default function AdminScreen({ lang = 'ta' }) {
             setActiveTab('logs');
             fetchLogs();
           }}
-          className={`px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
+          className={`px-3 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
             activeTab === 'logs'
-              ? 'bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 shadow-sm'
-              : 'text-stone-500 hover:text-stone-800 dark:hover:text-stone-200'
+              ? 'bg-gradient-to-r from-orange-500 to-amber-600 text-white shadow-md'
+              : 'text-stone-300 hover:text-white hover:bg-white/5'
           }`}
         >
           {lang === 'ta' ? 'சரிபார்ப்பு பதிவுகள்' : 'Audit Logs'}
         </button>
         <button
           onClick={() => setActiveTab('settings')}
-          className={`px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
+          className={`px-3 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
             activeTab === 'settings'
-              ? 'bg-amber-600 text-white shadow-sm'
-              : 'text-stone-500 hover:text-stone-800 dark:hover:text-stone-200'
+              ? 'bg-gradient-to-r from-orange-500 to-amber-600 text-white shadow-md'
+              : 'text-stone-300 hover:text-white hover:bg-white/5'
           }`}
         >
           {lang === 'ta' ? 'அமைப்புகள்' : 'Settings'}
@@ -209,20 +226,20 @@ export default function AdminScreen({ lang = 'ta' }) {
             setActiveTab('users');
             fetchUsers();
           }}
-          className={`px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
+          className={`px-3 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
             activeTab === 'users'
-              ? 'bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 shadow-sm'
-              : 'text-stone-500 hover:text-stone-800 dark:hover:text-stone-200'
+              ? 'bg-gradient-to-r from-orange-500 to-amber-600 text-white shadow-md'
+              : 'text-stone-300 hover:text-white hover:bg-white/5'
           }`}
         >
           {lang === 'ta' ? 'பயனர்கள்' : 'Users'}
         </button>
         <button
           onClick={() => setActiveTab('dataset')}
-          className={`px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
+          className={`px-3 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
             activeTab === 'dataset'
-              ? 'bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 shadow-sm'
-              : 'text-stone-500 hover:text-stone-800 dark:hover:text-stone-200'
+              ? 'bg-gradient-to-r from-orange-500 to-amber-600 text-white shadow-md'
+              : 'text-stone-300 hover:text-white hover:bg-white/5'
           }`}
         >
           {lang === 'ta' ? 'தரவுத்தளம்' : 'Dataset'}
@@ -233,35 +250,35 @@ export default function AdminScreen({ lang = 'ta' }) {
       {activeTab === 'dashboard' && (
         <div className="space-y-6">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <div className="p-4 rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 text-center shadow-sm">
+            <div className="p-4 rounded-2xl bg-[#0D1522]/90 border border-white/10 text-center shadow-lg">
               <span className="text-[10px] uppercase font-bold text-stone-400">
                 {lang === 'ta' ? 'மொத்த ஆய்வுகள்' : 'Total Verifications'}
               </span>
-              <div className="text-3xl font-bold font-mono text-stone-900 dark:text-stone-100 mt-1">
+              <div className="text-3xl font-bold font-mono text-white mt-1">
                 {stats?.totalChecks || 0}
               </div>
             </div>
-            <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900 text-center shadow-sm">
-              <span className="text-[10px] uppercase font-bold text-emerald-800 dark:text-emerald-300">
+            <div className="p-4 rounded-2xl bg-[#0D1522]/90 border border-emerald-500/30 text-center shadow-lg">
+              <span className="text-[10px] uppercase font-bold text-emerald-400">
                 {lang === 'ta' ? 'அசல் (Verified)' : 'Verified'}
               </span>
-              <div className="text-3xl font-bold font-mono text-emerald-700 dark:text-emerald-300 mt-1">
+              <div className="text-3xl font-bold font-mono text-emerald-400 mt-1">
                 {stats?.verifiedTotal || 0}
               </div>
             </div>
-            <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900 text-center shadow-sm">
-              <span className="text-[10px] uppercase font-bold text-amber-800 dark:text-amber-300">
+            <div className="p-4 rounded-2xl bg-[#0D1522]/90 border border-amber-500/30 text-center shadow-lg">
+              <span className="text-[10px] uppercase font-bold text-amber-400">
                 {lang === 'ta' ? 'சொல் பிழை (Near Match)' : 'Near Match'}
               </span>
-              <div className="text-3xl font-bold font-mono text-amber-700 dark:text-amber-300 mt-1">
+              <div className="text-3xl font-bold font-mono text-amber-400 mt-1">
                 {stats?.nearMatchTotal || 0}
               </div>
             </div>
-            <div className="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 text-center shadow-sm">
-              <span className="text-[10px] uppercase font-bold text-rose-800 dark:text-rose-300">
+            <div className="p-4 rounded-2xl bg-[#0D1522]/90 border border-rose-500/30 text-center shadow-lg">
+              <span className="text-[10px] uppercase font-bold text-rose-400">
                 {lang === 'ta' ? 'இல்லை (Not Found)' : 'Not Found'}
               </span>
-              <div className="text-3xl font-bold font-mono text-rose-700 dark:text-rose-300 mt-1">
+              <div className="text-3xl font-bold font-mono text-rose-400 mt-1">
                 {stats?.notFoundTotal || 0}
               </div>
             </div>
@@ -271,112 +288,198 @@ export default function AdminScreen({ lang = 'ta' }) {
 
       {/* 2. AUDIT LOGS */}
       {activeTab === 'logs' && (
-        <div className="bg-white dark:bg-stone-900 rounded-3xl p-5 sm:p-6 shadow-xl border border-stone-200 dark:border-stone-800">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mb-4">
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <div className="relative flex-1 sm:w-64">
-                <Search className="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2" />
+        <div className="bg-[#0D1522]/90 backdrop-blur-2xl rounded-3xl p-5 sm:p-6 shadow-2xl border border-white/10 space-y-4">
+          {/* Aligned Search & Filter Controls in One Row */}
+          <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+            <form onSubmit={handleSearchSubmit} className="flex flex-1 items-center gap-2.5">
+              <div className="relative flex-1">
+                <Search className="w-4 h-4 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                 <input
                   type="text"
                   value={searchLog}
                   onChange={(e) => setSearchLog(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && fetchLogs()}
-                  placeholder={lang === 'ta' ? 'தேடுக...' : 'Search logs...'}
-                  className="w-full pl-9 pr-3 py-2 rounded-xl text-xs bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800 outline-none"
+                  placeholder={lang === 'ta' ? 'குறள் உரை அல்லது சொல் தேடுக...' : 'Search couplet text or keywords...'}
+                  className="w-full h-11 pl-10 pr-4 rounded-xl text-xs sm:text-sm bg-[#070C15] border border-stone-700/80 focus:border-amber-400 text-white placeholder:text-stone-500 outline-none transition-all"
                 />
               </div>
 
               <select
+                id="admin-status-dropdown"
                 value={statusFilter}
-                onChange={(e) => {
-                  setStatusFilter(e.target.value);
-                  setTimeout(fetchLogs, 50);
-                }}
-                className="text-xs px-2.5 py-2 rounded-xl bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800 outline-none"
+                onChange={(e) => handleStatusChange(e.target.value)}
+                className="h-11 px-3 sm:px-4 rounded-xl text-xs sm:text-sm font-semibold bg-[#070C15] border border-stone-700/80 text-white outline-none focus:border-amber-400 cursor-pointer transition-all shrink-0"
               >
-                <option value="">{lang === 'ta' ? 'அனைத்து நிலைகளும்' : 'All Statuses'}</option>
-                <option value="verified">Verified</option>
-                <option value="near_match">Near Match</option>
-                <option value="not_found">Not Found</option>
+                <option value="">{lang === 'ta' ? 'அனைத்து நிலைகளும் (All)' : 'All Statuses'}</option>
+                <option value="verified">{lang === 'ta' ? 'அசல் (Verified)' : 'Verified'}</option>
+                <option value="near_match">{lang === 'ta' ? 'சொல் பிழை (Near Match)' : 'Near Match'}</option>
+                <option value="not_found">{lang === 'ta' ? 'இல்லை (Not Found)' : 'Not Found'}</option>
               </select>
-            </div>
 
-            <button
-              onClick={handleExportCsv}
-              className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm"
-            >
-              <Download className="w-3.5 h-3.5" />
-              <span>{lang === 'ta' ? 'CSV ஆக பதிவிறக்கு' : 'Export CSV'}</span>
-            </button>
+              <button
+                type="submit"
+                className="h-11 px-4 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs sm:text-sm transition-all shrink-0"
+              >
+                {lang === 'ta' ? 'தேடு' : 'Search'}
+              </button>
+            </form>
+
+            <div className="flex items-center gap-2 justify-end">
+              <span className="text-xs font-mono text-stone-400 px-2">
+                {totalLogs} {lang === 'ta' ? 'பதிவுகள்' : 'records'}
+              </span>
+              <button
+                onClick={handleExportCsv}
+                className="h-11 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm flex items-center gap-1.5 shadow-md shadow-emerald-600/20 transition-all shrink-0 cursor-pointer"
+              >
+                <Download className="w-4 h-4" />
+                <span>{lang === 'ta' ? 'CSV பதிவிறக்கு' : 'Export CSV'}</span>
+              </button>
+            </div>
           </div>
 
-          {/* Logs Table (Horizontal scroll container on desktop, cards on mobile) */}
-          <div className="overflow-x-auto rounded-xl border border-stone-200 dark:border-stone-800">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 uppercase font-bold text-[10px]">
+          {/* Logs Table with Controlled Column Widths & Horizontally Scrollable on Mobile */}
+          <div className="overflow-x-auto rounded-xl border border-white/10 shadow-inner">
+            <table className="w-full text-left text-xs table-fixed min-w-[700px]">
+              <thead className="bg-[#09111D] text-amber-300 uppercase font-bold text-[10px] border-b border-white/10">
                 <tr>
-                  <th className="p-3">ID</th>
-                  <th className="p-3">Timestamp</th>
-                  <th className="p-3">Source AI</th>
-                  <th className="p-3">Status</th>
-                  <th className="p-3">Wrong Words</th>
-                  <th className="p-3">Input Text</th>
+                  <th className="p-3 w-16 text-center">ID</th>
+                  <th className="p-3 w-36">Timestamp</th>
+                  <th className="p-3 w-32">Source AI</th>
+                  <th className="p-3 w-32 text-center">Status</th>
+                  <th className="p-3 w-24 text-center">Wrong Words</th>
+                  <th className="p-3 w-auto">Submitted Tamil Text</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-stone-100 dark:divide-stone-800">
+              <tbody className="divide-y divide-white/5 text-stone-200">
                 {logs.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="p-6 text-center text-stone-400 italic">
-                      No logs recorded yet.
+                    <td colSpan={6} className="p-8 text-center text-stone-400 italic">
+                      {statusFilter || searchLog
+                        ? (lang === 'ta' ? 'பொருந்தும் பதிவுகள் எதுவும் கிடைக்கவில்லை.' : 'No records match the selected filter or search query.')
+                        : (lang === 'ta' ? 'பதிவுகள் எதுவும் பதிவு செய்யப்படவில்லை.' : 'No audit logs recorded yet.')}
                     </td>
                   </tr>
                 ) : (
                   logs.map((log) => (
-                    <tr key={log.id} className="hover:bg-stone-50 dark:hover:bg-stone-800/50">
-                      <td className="p-3 font-mono font-bold">{log.id}</td>
-                      <td className="p-3 text-stone-500 whitespace-nowrap">{log.created_at}</td>
-                      <td className="p-3 font-semibold text-stone-800 dark:text-stone-200">{log.source_ai}</td>
-                      <td className="p-3">
+                    <tr
+                      key={log.id}
+                      onClick={() => setSelectedRecord(log)}
+                      className="hover:bg-white/5 transition-colors cursor-pointer group"
+                      title={lang === 'ta' ? 'முழு விவரம் பார்க்க அழுத்தவும்' : 'Click to view full record details'}
+                    >
+                      <td className="p-3 font-mono font-bold text-amber-400 text-center">{log.id}</td>
+                      <td className="p-3 text-stone-400 whitespace-nowrap font-mono">{log.created_at}</td>
+                      <td className="p-3 font-semibold text-white truncate">{log.source_ai || '—'}</td>
+                      <td className="p-3 text-center align-middle">
                         <span
-                          className={`px-2 py-0.5 rounded-full font-bold text-[10px] ${
+                          className={`inline-flex items-center justify-center px-2.5 py-1 rounded-full font-bold text-[10px] border tracking-wide uppercase ${
                             log.result_status === 'verified'
-                              ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
+                              ? 'bg-emerald-950 text-emerald-300 border-emerald-500/40 shadow-xs'
                               : log.result_status === 'near_match'
-                              ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
-                              : 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'
+                              ? 'bg-amber-950 text-amber-300 border-amber-500/40 shadow-xs'
+                              : 'bg-rose-950 text-rose-300 border-rose-500/40 shadow-xs'
                           }`}
                         >
-                          {log.result_status}
+                          {log.result_status === 'verified'
+                            ? (lang === 'ta' ? 'Verified' : 'Verified')
+                            : log.result_status === 'near_match'
+                            ? (lang === 'ta' ? 'Near Match' : 'Near Match')
+                            : (lang === 'ta' ? 'Not Found' : 'Not Found')}
                         </span>
                       </td>
-                      <td className="p-3 font-mono">{log.wrong_words_count || 0}</td>
-                      <td className="p-3 font-serif max-w-xs truncate">{log.input_text}</td>
+                      <td className="p-3 font-mono text-center text-stone-300 font-bold">
+                        {log.wrong_words_count || 0}
+                      </td>
+                      <td className="p-3 font-serif truncate text-stone-100 group-hover:text-amber-300 transition-colors">
+                        {log.input_text}
+                      </td>
                     </tr>
                   ))
                 )}
               </tbody>
             </table>
           </div>
+
+          {/* Record Detail Modal */}
+          {selectedRecord && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
+              <div className="bg-[#0A1322] border border-amber-500/30 rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl space-y-4 text-stone-100">
+                <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-xs px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                      ID #{selectedRecord.id}
+                    </span>
+                    <h4 className="text-base font-bold text-white font-serif">
+                      {lang === 'ta' ? 'பதிவு முழு விவரம்' : 'Verification Record Details'}
+                    </h4>
+                  </div>
+                  <button
+                    onClick={() => setSelectedRecord(null)}
+                    className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-stone-300 flex items-center justify-center text-sm font-bold"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                <div>
+                  <span className="text-[10px] uppercase font-bold text-stone-400 block mb-1">
+                    {lang === 'ta' ? 'சரிபார்க்கப்பட்ட தமிழ் உரை (Submitted Tamil Text)' : 'Submitted Tamil Text'}
+                  </span>
+                  <div className="p-4 rounded-2xl bg-[#060B14] border border-white/10 text-lg leading-[1.8] font-serif text-white whitespace-pre-wrap">
+                    {selectedRecord.input_text}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 text-xs">
+                  <div className="p-3 rounded-xl bg-white/5 border border-white/10">
+                    <span className="text-stone-400 block text-[10px] uppercase font-bold">{lang === 'ta' ? 'நிலை' : 'Status'}</span>
+                    <span className="font-bold text-sm text-amber-300 uppercase">{selectedRecord.result_status}</span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-white/5 border border-white/10">
+                    <span className="text-stone-400 block text-[10px] uppercase font-bold">{lang === 'ta' ? 'தவறான சொற்கள்' : 'Wrong Words'}</span>
+                    <span className="font-bold text-sm font-mono text-white">{selectedRecord.wrong_words_count || 0}</span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-white/5 border border-white/10">
+                    <span className="text-stone-400 block text-[10px] uppercase font-bold">{lang === 'ta' ? 'மூல AI' : 'Source AI'}</span>
+                    <span className="font-bold text-sm text-stone-200">{selectedRecord.source_ai || '—'}</span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-white/5 border border-white/10">
+                    <span className="text-stone-400 block text-[10px] uppercase font-bold">{lang === 'ta' ? 'குறள் எண்' : 'Canonical Kural'}</span>
+                    <span className="font-bold text-sm font-mono text-white">#{selectedRecord.kural_number || '—'}</span>
+                  </div>
+                </div>
+
+                <div className="pt-2 text-right">
+                  <button
+                    onClick={() => setSelectedRecord(null)}
+                    className="px-5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs"
+                  >
+                    {lang === 'ta' ? 'மூடு' : 'Close'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
       {/* 3. SETTINGS */}
       {activeTab === 'settings' && (
-        <div className="bg-white dark:bg-stone-900 rounded-3xl p-5 sm:p-8 shadow-xl border border-stone-200 dark:border-stone-800 max-w-2xl mx-auto">
-          <h3 className="text-lg font-bold text-stone-900 dark:text-stone-100 mb-4 flex items-center gap-2">
-            <Sliders className="w-5 h-5 text-amber-600" />
+        <div className="bg-[#0D1522]/90 backdrop-blur-2xl rounded-3xl p-5 sm:p-8 shadow-2xl border border-white/10 max-w-2xl mx-auto">
+          <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+            <Sliders className="w-5 h-5 text-amber-400" />
             <span>{lang === 'ta' ? 'அமைப்பு எல்லைகள் & மாதிரி அமைப்புகள்' : 'Engine Settings & Model Parameters'}</span>
           </h3>
 
           {saveMessage && (
-            <div className="mb-4 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 text-emerald-800 dark:text-emerald-300 text-xs">
+            <div className="mb-4 p-3 rounded-xl bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 text-xs">
               {saveMessage}
             </div>
           )}
 
           <form onSubmit={handleSaveSettings} className="space-y-4 text-xs">
             <div>
-              <label className="block font-bold text-stone-700 dark:text-stone-300 mb-1">
+              <label className="block font-bold text-stone-200 mb-1">
                 MAX_WRONG_WORDS (Near Match Threshold)
               </label>
               <input
@@ -385,21 +488,21 @@ export default function AdminScreen({ lang = 'ta' }) {
                 max={4}
                 value={settings.max_wrong_words}
                 onChange={(e) => setSettings({ ...settings, max_wrong_words: e.target.value })}
-                className="w-full px-3 py-2 rounded-xl bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-700 outline-none"
+                className="w-full px-3 py-2 rounded-xl bg-[#070C15] border border-stone-700/80 text-white outline-none focus:border-orange-500"
               />
-              <p className="text-[11px] text-stone-500 mt-1">
+              <p className="text-[11px] text-stone-400 mt-1">
                 Standard: 2 words. Couplets with ≤ 2 wrong words are marked "Incorrect, needs correction" (Near Match).
               </p>
             </div>
 
             <div>
-              <label className="block font-bold text-stone-700 dark:text-stone-300 mb-1">
+              <label className="block font-bold text-stone-200 mb-1">
                 Chatbot LLM Provider
               </label>
               <select
                 value={settings.chatbot_provider}
                 onChange={(e) => setSettings({ ...settings, chatbot_provider: e.target.value })}
-                className="w-full px-3 py-2 rounded-xl bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-700 outline-none"
+                className="w-full px-3 py-2 rounded-xl bg-[#070C15] border border-stone-700/80 text-white outline-none focus:border-orange-500"
               >
                 <option value="gemini">Google Gemini (Gemini 1.5 Flash)</option>
                 <option value="claude">Anthropic Claude (Claude 3.5 Sonnet / Haiku)</option>
@@ -408,7 +511,7 @@ export default function AdminScreen({ lang = 'ta' }) {
             </div>
 
             <div>
-              <label className="block font-bold text-stone-700 dark:text-stone-300 mb-1">
+              <label className="block font-bold text-stone-200 mb-1">
                 Chatbot Model Name (GEMINI_MODEL)
               </label>
               <div className="flex gap-2">
@@ -419,7 +522,7 @@ export default function AdminScreen({ lang = 'ta' }) {
                       setSettings({ ...settings, chatbot_model: e.target.value, gemini_model: e.target.value });
                     }
                   }}
-                  className="px-3 py-2 rounded-xl bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-700 outline-none text-xs"
+                  className="px-3 py-2 rounded-xl bg-[#070C15] border border-stone-700/80 text-white outline-none text-xs focus:border-orange-500"
                 >
                   <option value="gemini-3.5-flash">gemini-3.5-flash (Recommended)</option>
                   <option value="gemini-3.5-flash-lite">gemini-3.5-flash-lite (Fastest)</option>
@@ -431,27 +534,27 @@ export default function AdminScreen({ lang = 'ta' }) {
                   value={settings.chatbot_model || ''}
                   onChange={(e) => setSettings({ ...settings, chatbot_model: e.target.value, gemini_model: e.target.value })}
                   placeholder="Enter custom model"
-                  className="flex-1 px-3 py-2 rounded-xl bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-700 outline-none text-xs"
+                  className="flex-1 px-3 py-2 rounded-xl bg-[#070C15] border border-stone-700/80 text-white outline-none text-xs focus:border-orange-500"
                 />
               </div>
             </div>
 
-            {/* API Key Form with Masked Display, Replace Input & Test Connection Button */}
-            <div className="pt-3 border-t border-stone-200 dark:border-stone-800 space-y-3">
-              <label className="block font-bold text-stone-700 dark:text-stone-300 mb-1 flex items-center gap-1.5">
-                <KeyRound className="w-4 h-4 text-amber-600" />
+            {/* API Key Form */}
+            <div className="pt-3 border-t border-white/10 space-y-3">
+              <label className="block font-bold text-stone-200 mb-1 flex items-center gap-1.5">
+                <KeyRound className="w-4 h-4 text-amber-400" />
                 <span>Google Gemini API Key Status</span>
               </label>
-              <div className="p-3 rounded-xl bg-stone-100 dark:bg-stone-800 text-[11px] space-y-1 text-stone-600 dark:text-stone-400">
+              <div className="p-3 rounded-xl bg-[#070C15] border border-white/10 text-[11px] space-y-1 text-stone-300">
                 <p>
-                  Gemini Key Masked: <code className="font-mono font-bold text-stone-900 dark:text-stone-100 bg-stone-200 dark:bg-stone-700 px-2 py-0.5 rounded">{settings.masked_gemini_key || '(Not configured)'}</code>
+                  Gemini Key Masked: <code className="font-mono font-bold text-amber-300 bg-white/5 px-2 py-0.5 rounded">{settings.masked_gemini_key || '(Not configured)'}</code>
                 </p>
                 <p>Status: {settings.has_gemini_key ? '✅ Configured in .env' : '❌ Not configured'}</p>
                 <p className="italic text-[10px] text-stone-400">🔒 Security Mandate: The raw API key is never exposed to the client or browser network responses.</p>
               </div>
 
               <div>
-                <label className="block font-bold text-stone-700 dark:text-stone-300 mb-1 text-[11px]">
+                <label className="block font-bold text-stone-200 mb-1 text-[11px]">
                   Replace Gemini API Key (Enter new key to update .env)
                 </label>
                 <div className="relative">
@@ -460,12 +563,12 @@ export default function AdminScreen({ lang = 'ta' }) {
                     value={apiKeyInput}
                     onChange={(e) => setApiKeyInput(e.target.value)}
                     placeholder="Enter new key to replace (e.g. AIza...)"
-                    className="w-full px-3 py-2 pr-10 rounded-xl bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-700 outline-none text-xs font-mono"
+                    className="w-full px-3 py-2 pr-10 rounded-xl bg-[#070C15] border border-stone-700/80 text-white outline-none text-xs font-mono focus:border-orange-500"
                   />
                   <button
                     type="button"
                     onClick={() => setShowApiKey(!showApiKey)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 dark:hover:text-stone-200"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-white"
                   >
                     {showApiKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -477,12 +580,12 @@ export default function AdminScreen({ lang = 'ta' }) {
                   type="button"
                   onClick={testApiConnection}
                   disabled={testingKey}
-                  className="px-4 py-2 rounded-xl bg-stone-800 dark:bg-stone-200 text-white dark:text-stone-900 font-bold text-xs hover:bg-stone-700 transition"
+                  className="px-4 py-2 rounded-xl bg-white/10 text-white font-bold text-xs hover:bg-white/20 transition"
                 >
                   {testingKey ? 'Testing...' : 'Test Connection'}
                 </button>
                 {testResult && (
-                  <span className="text-xs font-semibold text-amber-700 dark:text-amber-400">
+                  <span className="text-xs font-semibold text-amber-300">
                     {testResult}
                   </span>
                 )}
@@ -492,7 +595,7 @@ export default function AdminScreen({ lang = 'ta' }) {
             <button
               type="submit"
               disabled={savingSettings}
-              className="w-full py-3 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-md mt-4"
+              className="w-full py-3 rounded-xl bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white font-bold text-xs shadow-md mt-4 transition-all"
             >
               {savingSettings ? 'Saving...' : 'Save Settings'}
             </button>
@@ -502,15 +605,15 @@ export default function AdminScreen({ lang = 'ta' }) {
 
       {/* 4. USERS */}
       {activeTab === 'users' && (
-        <div className="bg-white dark:bg-stone-900 rounded-3xl p-5 sm:p-6 shadow-xl border border-stone-200 dark:border-stone-800 max-w-3xl mx-auto">
-          <h3 className="text-base font-bold text-stone-900 dark:text-stone-100 mb-4 flex items-center gap-2">
-            <Users className="w-5 h-5 text-amber-600" />
+        <div className="bg-[#0D1522]/90 backdrop-blur-2xl rounded-3xl p-5 sm:p-6 shadow-2xl border border-white/10 max-w-3xl mx-auto">
+          <h3 className="text-base font-bold text-white mb-4 flex items-center gap-2">
+            <Users className="w-5 h-5 text-amber-400" />
             <span>{lang === 'ta' ? 'பதிவு செய்யப்பட்ட பயனர்கள்' : 'Registered Users'}</span>
           </h3>
 
-          <div className="overflow-x-auto rounded-xl border border-stone-200 dark:border-stone-800">
+          <div className="overflow-x-auto rounded-xl border border-white/10">
             <table className="w-full text-left text-xs">
-              <thead className="bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 uppercase font-bold text-[10px]">
+              <thead className="bg-[#09111D] text-amber-300 uppercase font-bold text-[10px] border-b border-white/10">
                 <tr>
                   <th className="p-3">ID</th>
                   <th className="p-3">Username</th>
@@ -519,13 +622,13 @@ export default function AdminScreen({ lang = 'ta' }) {
                   <th className="p-3">Joined</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-stone-100 dark:divide-stone-800">
+              <tbody className="divide-y divide-white/5 text-stone-200">
                 {users.map((u) => (
-                  <tr key={u.id} className="hover:bg-stone-50 dark:hover:bg-stone-800/50">
-                    <td className="p-3 font-mono">{u.id}</td>
-                    <td className="p-3 font-bold text-stone-900 dark:text-stone-100">{u.username}</td>
-                    <td className="p-3 text-stone-500">{u.email || '—'}</td>
-                    <td className="p-3 font-semibold text-amber-600">{u.role}</td>
+                  <tr key={u.id} className="hover:bg-white/5 transition-colors">
+                    <td className="p-3 font-mono text-amber-400">{u.id}</td>
+                    <td className="p-3 font-bold text-white">{u.username}</td>
+                    <td className="p-3 text-stone-400">{u.email || '—'}</td>
+                    <td className="p-3 font-semibold text-orange-400">{u.role}</td>
                     <td className="p-3 text-stone-400">{u.created_at}</td>
                   </tr>
                 ))}
@@ -537,29 +640,29 @@ export default function AdminScreen({ lang = 'ta' }) {
 
       {/* 5. DATASET HEALTH */}
       {activeTab === 'dataset' && (
-        <div className="bg-white dark:bg-stone-900 rounded-3xl p-5 sm:p-8 shadow-xl border border-stone-200 dark:border-stone-800 max-w-2xl mx-auto text-center">
-          <Database className="w-12 h-12 text-emerald-600 mx-auto mb-3" />
-          <h3 className="text-xl font-bold text-stone-900 dark:text-stone-100">
+        <div className="bg-[#0D1522]/90 backdrop-blur-2xl rounded-3xl p-5 sm:p-8 shadow-2xl border border-white/10 max-w-2xl mx-auto text-center">
+          <Database className="w-12 h-12 text-emerald-400 mx-auto mb-3" />
+          <h3 className="text-xl font-bold text-white">
             {lang === 'ta' ? 'திருக்குறள் தரவுத்தள நிலை' : 'Canonical Database Health'}
           </h3>
-          <p className="text-xs text-stone-500 mt-1 mb-6">
+          <p className="text-xs text-stone-300 mt-1 mb-6">
             SQLite Database & JSON Offline Bundle Verification
           </p>
 
           <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto mb-6 text-left text-xs">
-            <div className="p-3 rounded-xl bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800">
+            <div className="p-3 rounded-xl bg-[#070C15] border border-white/10">
               <span className="text-stone-400 block text-[10px]">Total Couplets</span>
-              <span className="text-xl font-mono font-bold text-stone-900 dark:text-stone-100">1,330</span>
+              <span className="text-xl font-mono font-bold text-white">1,330</span>
             </div>
-            <div className="p-3 rounded-xl bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800">
+            <div className="p-3 rounded-xl bg-[#070C15] border border-white/10">
               <span className="text-stone-400 block text-[10px]">Total Chapters</span>
-              <span className="text-xl font-mono font-bold text-stone-900 dark:text-stone-100">133</span>
+              <span className="text-xl font-mono font-bold text-white">133</span>
             </div>
           </div>
 
           <button
             onClick={() => alert('Dataset verified 100% healthy: 1,330 couplets present in SQLite.')}
-            className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md"
+            className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-xs shadow-md shadow-emerald-600/20 transition-all"
           >
             {lang === 'ta' ? 'தரவுத்தளத்தை மீண்டும் சரிபார்' : 'Re-verify Dataset Health'}
           </button>

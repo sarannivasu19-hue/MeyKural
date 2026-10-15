@@ -23,11 +23,11 @@ export default function TrustGauge({ score = 100, level = 'authentic', lang = 't
   }[lang] || {};
 
   return (
-    <div className="flex flex-col items-center justify-center p-4 bg-white dark:bg-stone-900 rounded-2xl shadow-sm border border-stone-200 dark:border-stone-800 w-full max-w-sm mx-auto">
-      <div className="flex items-center gap-2 mb-2 text-xs font-semibold uppercase tracking-wider text-stone-500 dark:text-stone-400">
-        {level === 'authentic' && <ShieldCheck className="w-4 h-4 text-emerald-600" />}
-        {level === 'suspicious' && <AlertTriangle className="w-4 h-4 text-amber-500" />}
-        {level === 'fabricated' && <ShieldAlert className="w-4 h-4 text-rose-600" />}
+    <div className="flex flex-col items-center justify-center p-4 bg-[#0D1522]/90 backdrop-blur-xl rounded-2xl shadow-xl border border-white/10 w-full max-w-sm mx-auto">
+      <div className="flex items-center gap-2 mb-2 text-xs font-bold uppercase tracking-wider text-amber-300">
+        {level === 'authentic' && <ShieldCheck className="w-4 h-4 text-emerald-400" />}
+        {level === 'suspicious' && <AlertTriangle className="w-4 h-4 text-amber-400" />}
+        {level === 'fabricated' && <ShieldAlert className="w-4 h-4 text-rose-400" />}
         <span>{lang === 'ta' ? 'நம்பகத்தன்மை அளவீடு' : 'Trust Gauge'}</span>
       </div>
 
@@ -89,16 +89,16 @@ export default function TrustGauge({ score = 100, level = 'authentic', lang = 't
 
       {/* Numerical and State Readout */}
       <div className="mt-3 text-center">
-        <div className="text-2xl font-bold font-mono tracking-tight text-stone-900 dark:text-stone-100">
+        <div className="text-2xl font-bold font-mono tracking-tight text-white">
           {clampedScore}%
         </div>
         <div
-          className={`text-xs font-bold mt-0.5 px-3 py-1 rounded-full inline-block ${
+          className={`text-xs font-bold mt-1 px-3 py-1 rounded-full inline-block border ${
             level === 'authentic'
-              ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200'
+              ? 'bg-emerald-950 text-emerald-300 border-emerald-500/40'
               : level === 'suspicious'
-              ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-200'
-              : 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-200'
+              ? 'bg-amber-950 text-amber-300 border-amber-500/40'
+              : 'bg-rose-950 text-rose-300 border-rose-500/40'
           }`}
         >
           {labels[level] || level}

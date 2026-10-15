@@ -41,11 +41,10 @@ export default {
         }
       },
       fontFamily: {
-        // Times New Roman for English, Noto Serif Tamil fallback for Tamil glyphs
-        serif:      ['"Times New Roman"', 'Times', '"Noto Serif Tamil"', 'serif'],
-        sans:       ['"Times New Roman"', 'Times', '"Noto Serif Tamil"', 'sans-serif'],
-        tamilSerif: ['"Times New Roman"', 'Times', '"Noto Serif Tamil"', 'serif'],
-        tamilSans:  ['"Times New Roman"', 'Times', '"Noto Serif Tamil"', 'sans-serif'],
+        serif:      ['"Noto Serif Tamil"', 'Georgia', 'serif'],
+        sans:       ['"Mukta Malar"', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
+        tamilSerif: ['"Noto Serif Tamil"', 'Georgia', 'serif'],
+        tamilSans:  ['"Mukta Malar"', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
         mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Consolas', 'monospace'],
       },
       fontSize: {

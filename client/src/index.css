@@ -192,7 +192,7 @@
 /* === Kural Couplet Display === */
 /* Large Tamil text with generous line-height for couplets */
 .kural-text {
-  font-family: "Times New Roman", Times, "Noto Serif Tamil", serif;
+  font-family: var(--font-heading);
   font-size: clamp(1.1rem, 3vw, 1.4rem);
   line-height: 1.7;
   letter-spacing: 0.01em;

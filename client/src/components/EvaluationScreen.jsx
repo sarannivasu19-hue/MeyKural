@@ -81,14 +81,14 @@ export default function EvaluationScreen({ lang = 'ta' }) {
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-6 sm:py-8 font-serif">
+    <div className="max-w-5xl mx-auto px-4 py-6 sm:py-8 font-sans">
       {/* Header */}
       <div className="text-center mb-6">
-        <h2 className="text-2xl sm:text-3xl font-bold text-stone-900 dark:text-stone-100 flex items-center justify-center gap-2">
+        <h2 className="text-2xl sm:text-3xl font-extrabold text-white flex items-center justify-center gap-2">
           <span>{lang === 'ta' ? 'அம்சங்களின் மதிப்பீட்டு அட்டை' : 'System Feature Scorecard'}</span>
-          <BarChart3 className="w-6 h-6 text-amber-600" />
+          <BarChart3 className="w-6 h-6 text-amber-400" />
         </h2>
-        <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 mt-1">
+        <p className="text-xs sm:text-sm text-stone-300 mt-1 max-w-xl mx-auto">
           {lang === 'ta'
             ? 'அனைத்து அமைப்புகளின் தரம், துல்லியம் & நம்பகத்தன்மை நேரடி சோதனை முடிவுகள்.'
             : 'Comprehensive live test report covering all 11 system features with pass/fail/skipped scoring.'}
@@ -96,20 +96,20 @@ export default function EvaluationScreen({ lang = 'ta' }) {
       </div>
 
       {/* Action Controls & Overall Score Banner */}
-      <div className="bg-white dark:bg-stone-900 rounded-3xl p-5 sm:p-6 shadow-xl border border-stone-200 dark:border-stone-800 mb-6">
+      <div className="bg-[#0D1522]/90 backdrop-blur-2xl rounded-3xl p-5 sm:p-6 shadow-2xl border border-white/10 mb-6 text-stone-100">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-16 h-16 rounded-2xl bg-amber-600 flex items-center justify-center text-white text-2xl font-mono font-bold shadow-md">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center text-white text-2xl font-mono font-bold shadow-lg shadow-orange-500/30">
               {data ? data.overallScore : '--%'}
             </div>
             <div>
-              <span className="text-xs font-bold uppercase tracking-wider text-stone-400">
+              <span className="text-xs font-bold uppercase tracking-wider text-orange-400">
                 {lang === 'ta' ? 'ஒட்டுமொத்த கணினி மதிப்பெண்' : 'Overall System Score'}
               </span>
-              <h3 className="text-lg font-bold text-stone-900 dark:text-stone-100">
+              <h3 className="text-lg font-bold text-white">
                 {lang === 'ta' ? 'அனைத்து சோதனைகளும் தேர்ச்சி' : 'All Primary Verification Tests Passed'}
               </h3>
-              <p className="text-[11px] text-stone-500">
+              <p className="text-[11px] text-stone-300">
                 {data ? `Evaluated in ${data.totalTimeMs} ms • ${data.timestamp}` : 'Ready to evaluate'}
               </p>
             </div>
@@ -119,7 +119,7 @@ export default function EvaluationScreen({ lang = 'ta' }) {
             <button
               onClick={runTests}
               disabled={loading}
-              className="px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-md flex items-center gap-1.5 active:scale-95 transition-all disabled:opacity-50"
+              className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white font-bold text-xs shadow-md shadow-orange-500/20 flex items-center gap-1.5 active:scale-95 transition-all disabled:opacity-50"
             >
               {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4 fill-white" />}
               <span>{loading ? (lang === 'ta' ? 'இயங்குகிறது...' : 'Running...') : (lang === 'ta' ? 'அனைத்து சோதனைகளையும் இயக்கு' : 'Run All Tests')}</span>
@@ -128,7 +128,7 @@ export default function EvaluationScreen({ lang = 'ta' }) {
             <button
               onClick={downloadJson}
               disabled={!data}
-              className="px-3 py-2.5 rounded-xl bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 font-semibold text-xs border border-stone-200 dark:border-stone-700 hover:bg-stone-200 transition-colors flex items-center gap-1"
+              className="px-3 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-stone-200 font-semibold text-xs border border-white/10 transition-colors flex items-center gap-1"
             >
               <Download className="w-3.5 h-3.5" />
               <span>JSON</span>
@@ -137,7 +137,7 @@ export default function EvaluationScreen({ lang = 'ta' }) {
             <button
               onClick={downloadCsv}
               disabled={!data}
-              className="px-3 py-2.5 rounded-xl bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 font-semibold text-xs border border-stone-200 dark:border-stone-700 hover:bg-stone-200 transition-colors flex items-center gap-1"
+              className="px-3 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-stone-200 font-semibold text-xs border border-white/10 transition-colors flex items-center gap-1"
             >
               <Download className="w-3.5 h-3.5" />
               <span>CSV</span>
@@ -147,9 +147,9 @@ export default function EvaluationScreen({ lang = 'ta' }) {
 
         {/* Live Progress Bar */}
         {loading && (
-          <div className="w-full bg-stone-200 dark:bg-stone-800 h-2 rounded-full overflow-hidden mt-4">
+          <div className="w-full bg-[#070C15] h-2 rounded-full overflow-hidden mt-4 border border-white/10">
             <div
-              className="bg-amber-600 h-full transition-all duration-300"
+              className="bg-gradient-to-r from-orange-500 to-amber-500 h-full transition-all duration-300"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -169,43 +169,43 @@ export default function EvaluationScreen({ lang = 'ta' }) {
               animate={{ opacity: 1, y: 0 }}
               className={`p-5 rounded-2xl border transition-all ${
                 isPass
-                  ? 'bg-white dark:bg-stone-900 border-stone-200 dark:border-stone-800 shadow-sm'
+                  ? 'bg-[#0D1522]/90 backdrop-blur-xl border-white/10 shadow-xl'
                   : isSkip
-                  ? 'bg-stone-50/60 dark:bg-stone-950/60 border-dashed border-stone-300 dark:border-stone-800'
-                  : 'bg-rose-50 dark:bg-rose-950/40 border-rose-300 dark:border-rose-900'
+                  ? 'bg-[#0D1522]/70 backdrop-blur-xl border-dashed border-white/20'
+                  : 'bg-rose-950/40 backdrop-blur-xl border-rose-500/40'
               }`}
             >
               <div className="flex items-start justify-between gap-3 mb-2">
                 <div className="flex items-center gap-2">
                   {isPass ? (
-                    <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+                    <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
                   ) : isSkip ? (
                     <HelpCircle className="w-5 h-5 text-stone-400 shrink-0" />
                   ) : (
-                    <XCircle className="w-5 h-5 text-rose-600 shrink-0" />
+                    <XCircle className="w-5 h-5 text-rose-400 shrink-0" />
                   )}
-                  <h4 className="font-bold text-sm text-stone-900 dark:text-stone-100">
+                  <h4 className="font-bold text-sm text-white">
                     {card.name}
                   </h4>
                 </div>
                 <span
                   className={`text-xs font-mono font-bold px-2.5 py-0.5 rounded-full ${
                     isPass
-                      ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
+                      ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-500/40'
                       : isSkip
-                      ? 'bg-stone-200 text-stone-700 dark:bg-stone-800 dark:text-stone-400'
-                      : 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'
+                      ? 'bg-stone-800 text-stone-300 border border-stone-600/40'
+                      : 'bg-rose-950/80 text-rose-300 border border-rose-500/40'
                   }`}
                 >
                   {card.score}
                 </span>
               </div>
 
-              <p className="text-xs text-stone-500 dark:text-stone-400 mb-3">
+              <p className="text-xs text-stone-300 mb-3 leading-relaxed">
                 {card.description}
               </p>
 
-              <div className="p-2.5 rounded-xl bg-stone-50 dark:bg-stone-950 text-[11px] text-stone-700 dark:text-stone-300 border border-stone-100 dark:border-stone-800 leading-relaxed font-mono">
+              <div className="p-2.5 rounded-xl bg-[#070C15]/80 text-[11px] text-amber-200/90 border border-white/10 leading-relaxed font-mono">
                 {card.details}
               </div>
             </motion.div>

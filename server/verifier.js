@@ -28,14 +28,17 @@ function loadData() {
 }
 
 /**
- * Normalizes Tamil string to Unicode NFC, removes punctuation and zero-width characters.
+ * Normalizes Tamil string to Unicode NFC, removes punctuation and zero-width characters safely.
+ * Handles Tamil punctuation, danda, double danda, typographic quotes, zero-width joiners,
+ * without modifying semantic Tamil characters or pulli marks.
  */
 function normalizeTamil(text) {
   if (!text) return '';
   return text
     .normalize('NFC')
-    .replace(/[\u200B-\u200D\uFEFF]/g, '')
-    .replace(/[.,;!?"'’‘()\[\]{}—–\-:]/g, ' ')
+    .replace(/[\u200B-\u200D\uFEFF\u00AD\u2028\u2029]/g, '')
+    .replace(/[\u0964\u0965]/g, ' ') // Tamil/Sanskrit danda and double danda
+    .replace(/[.,;!?"'’‘“”«»()\[\]{}—–\-:/\\_`~*#@^+=<>|]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
 }

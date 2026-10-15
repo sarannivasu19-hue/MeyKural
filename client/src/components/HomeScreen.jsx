@@ -113,36 +113,36 @@ export default function HomeScreen({ lang = 'ta', setActiveTab, user }) {
 
   return (
     <div className="space-y-6 pb-6 font-sans">
-      {/* HERO SECTION - MATCHING PANEL 1 IN REFERENCE IMAGE */}
+      {/* HERO SECTION - REFINED 3D PALM-LEAF GLASS STYLING */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative overflow-hidden rounded-3xl bg-[#09111D]/90 border border-white/10 p-8 sm:p-10 shadow-2xl backdrop-blur-xl"
+        className="relative overflow-hidden rounded-3xl bg-[#08121E]/90 border border-amber-500/20 p-8 sm:p-10 shadow-[0_20px_50px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.15)] backdrop-blur-2xl"
       >
-        <div className="relative z-10 max-w-xl">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-tight font-tamilSerif">
+        <div className="relative z-10 max-w-2xl">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-[1.35] tracking-normal font-serif pb-1.5 drop-shadow-md">
             {lang === 'ta' ? 'தமிழின் செம்மொழி' : 'Classical Tamil'}
           </h1>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold bg-gradient-to-r from-orange-400 to-amber-300 bg-clip-text text-transparent mt-1 leading-tight font-tamilSerif">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-amber-300 leading-[1.4] tracking-normal font-serif pt-1 drop-shadow-sm">
             {lang === 'ta' ? 'இன்றும் என்றும்...' : 'Timeless & Eternal...'}
           </h2>
-          <p className="text-stone-300 text-sm sm:text-base mt-4 leading-relaxed font-sans max-w-md">
+          <p className="text-stone-300 text-sm sm:text-base mt-4 leading-[1.8] font-sans max-w-lg">
             {lang === 'ta'
-              ? 'AI உதவியுடன் தமிழ் அறிவை மேம்படுத்துவோம்.'
-              : 'Empowering Tamil wisdom and literature with canonical AI shielding.'}
+              ? 'AI உதவியுடன் தமிழ் செம்மொழி இலக்கியங்களை பாதுகாப்போம்; 1,330 திருக்குறள்களின் தூய வடிவை அறிவோம்.'
+              : 'Empowering Tamil classical literature with canonical AI shielding and zero-hallucination verification.'}
           </p>
 
-          <div className="mt-6 flex items-center gap-3">
+          <div className="mt-6 flex flex-wrap items-center gap-3">
             <button
               onClick={() => setActiveTab('verify')}
-              className="px-6 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white font-bold text-sm shadow-lg shadow-orange-500/30 transition-all active:scale-95 flex items-center gap-2"
+              className="px-6 py-3.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white font-bold text-sm shadow-[0_10px_25px_rgba(249,115,22,0.35),inset_0_1px_1px_rgba(255,255,255,0.25)] hover:shadow-[0_14px_30px_rgba(249,115,22,0.45)] transition-all active:scale-95 flex items-center gap-2"
             >
               <span>{lang === 'ta' ? 'சரிபார்க்கத் தொடங்கு' : 'Start Verification'}</span>
               <ChevronRight className="w-4 h-4" />
             </button>
             <button
               onClick={() => setActiveTab('police')}
-              className="px-5 py-3 rounded-xl bg-white/10 hover:bg-white/15 text-stone-200 border border-white/10 font-bold text-sm transition-all"
+              className="px-5 py-3.5 rounded-xl bg-white/10 hover:bg-white/15 text-stone-200 border border-white/15 font-bold text-sm shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)] transition-all"
             >
               <span>{lang === 'ta' ? 'தமிழ் வினாடி வினா' : 'Tamil Quiz'}</span>
             </button>

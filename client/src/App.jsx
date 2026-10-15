@@ -46,7 +46,7 @@ export default function App() {
 
   const [activeTab, setActiveTabState] = useState(getInitialTab);
   const [lang, setLang] = useState(() => localStorage.getItem('kural_lang') || 'ta');
-  const [darkMode, setDarkMode] = useState(() => localStorage.getItem('kural_dark') === 'true');
+  const [darkMode, setDarkMode] = useState(() => localStorage.getItem('kural_dark') !== 'false');
   const [verifyInitialText, setVerifyInitialText] = useState('');
 
   const setActiveTab = (tab) => {
@@ -218,7 +218,7 @@ export default function App() {
             <HomeScreen lang={lang} setActiveTab={setActiveTab} user={user} />
           )}
           {activeTab === 'verify' && (
-            <VerifierScreen lang={lang} key={verifyInitialText || 'verify-screen'} />
+            <VerifierScreen lang={lang} key={verifyInitialText || 'verify-screen'} initialText={verifyInitialText || ''} />
           )}
           {activeTab === 'library' && (
             <LibraryScreen lang={lang} onSelectForVerify={handleSelectForVerify} />
@@ -227,7 +227,7 @@ export default function App() {
             <PoliceGameScreen lang={lang} />
           )}
           {activeTab === 'ai_report' && (
-            <AiReportScreen lang={lang} />
+            <AiReportScreen lang={lang} user={user} setActiveTab={setActiveTab} />
           )}
           {activeTab === 'chat' && (
             <ChatbotScreen lang={lang} />

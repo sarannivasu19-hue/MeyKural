@@ -33,8 +33,8 @@ export default function BottomNav({ activeTab, setActiveTab, lang = 'ta', user }
               onClick={() => setActiveTab(item.id)}
               className={`flex flex-col items-center justify-center flex-1 h-full min-h-[44px] min-w-[44px] transition-all ${
                 isActive
-                  ? 'text-amber-600 dark:text-amber-500 font-bold scale-105'
-                  : 'text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200'
+                  ? 'text-amber-400 font-bold scale-105 drop-shadow-[0_0_8px_rgba(251,191,36,0.4)]'
+                  : 'text-stone-300 hover:text-white'
               }`}
             >
               <Icon className="w-5 h-5 mb-0.5" />

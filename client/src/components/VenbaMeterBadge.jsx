@@ -7,18 +7,18 @@ export default function VenbaMeterBadge({ meter, lang = 'ta' }) {
   const { valid, line1Cirs, line2Cirs, totalCirs, explanation } = meter;
 
   return (
-    <div className="bg-white dark:bg-stone-900 rounded-xl p-3 border border-stone-200 dark:border-stone-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs">
+    <div className="bg-[#0D1522]/90 rounded-xl p-3 border border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs shadow-md">
       <div className="flex items-center gap-2">
         {valid ? (
-          <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+          <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
         ) : (
-          <AlertOctagon className="w-4 h-4 text-amber-500 flex-shrink-0" />
+          <AlertOctagon className="w-4 h-4 text-amber-400 flex-shrink-0" />
         )}
         <div>
-          <span className="font-bold text-stone-800 dark:text-stone-200">
+          <span className="font-bold text-white">
             {lang === 'ta' ? 'குறள் வெண்பா யாப்பு:' : 'Kural Venba Meter:'}
           </span>{' '}
-          <span className={valid ? 'text-emerald-700 dark:text-emerald-400 font-semibold' : 'text-amber-700 dark:text-amber-400 font-semibold'}>
+          <span className={valid ? 'text-emerald-400 font-bold' : 'text-amber-400 font-bold'}>
             {valid
               ? lang === 'ta'
                 ? 'முறையான வெண்பா (4+3 சீர்கள்)'
@@ -27,34 +27,34 @@ export default function VenbaMeterBadge({ meter, lang = 'ta' }) {
               ? 'யாப்புப் பிழை கண்டறியப்பட்டது'
               : 'Meter Deviation Detected'}
           </span>
-          <p className="text-[11px] text-stone-500 dark:text-stone-400 mt-0.5">{explanation}</p>
+          <p className="text-[11px] text-stone-300 mt-0.5">{explanation}</p>
         </div>
       </div>
 
       <div className="flex items-center gap-1.5 self-end sm:self-auto font-mono text-[11px]">
         <span
-          className={`px-2 py-0.5 rounded ${
+          className={`px-2 py-0.5 rounded border ${
             line1Cirs === 4
-              ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
-              : 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
+              ? 'bg-emerald-950 text-emerald-300 border-emerald-500/40'
+              : 'bg-amber-950 text-amber-300 border-amber-500/40'
           }`}
         >
           L1: {line1Cirs}/4
         </span>
         <span
-          className={`px-2 py-0.5 rounded ${
+          className={`px-2 py-0.5 rounded border ${
             line2Cirs === 3
-              ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
-              : 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
+              ? 'bg-emerald-950 text-emerald-300 border-emerald-500/40'
+              : 'bg-amber-950 text-amber-300 border-amber-500/40'
           }`}
         >
           L2: {line2Cirs}/3
         </span>
         <span
-          className={`px-2 py-0.5 rounded font-bold ${
+          className={`px-2 py-0.5 rounded font-bold border ${
             totalCirs === 7
-              ? 'bg-stone-200 text-stone-800 dark:bg-stone-800 dark:text-stone-200'
-              : 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'
+              ? 'bg-white/10 text-white border-white/20'
+              : 'bg-rose-950 text-rose-300 border-rose-500/40'
           }`}
         >
           Σ: {totalCirs}/7

@@ -168,14 +168,10 @@ export default function LoginPage({ onLoginSuccess, onContinueGuest, lang = 'ta'
           initial={{ opacity: 0, y: 20, scale: 0.98 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.45, ease: 'easeOut' }}
-          className={`w-full max-w-md rounded-3xl p-6 sm:p-8 shadow-2xl relative z-10 transition-all duration-300 ${
-            isAdminMode
-              ? 'bg-[#18212b]/90 text-stone-100 border-2 border-[#C9A24A] shadow-[0_12px_40px_rgba(0,0,0,0.45)]'
-              : 'bg-[#fffbf0]/85 text-stone-900 border border-white/60 shadow-[0_8px_30px_rgba(0,0,0,0.2)]'
-          }`}
+          className="w-full max-w-md rounded-3xl p-6 sm:p-8 shadow-2xl relative z-10 transition-all duration-300 bg-[#0D1522]/95 backdrop-blur-2xl border border-white/10 text-stone-100 shadow-[0_12px_40px_rgba(0,0,0,0.5)]"
           style={{
-            backdropFilter: 'blur(16px)',
-            WebkitBackdropFilter: 'blur(16px)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
             transform: reducedMotion
               ? 'none'
               : `perspective(1000px) rotateX(${cardTilt.rotateX}deg) rotateY(${cardTilt.rotateY}deg)`
@@ -183,28 +179,20 @@ export default function LoginPage({ onLoginSuccess, onContinueGuest, lang = 'ta'
         >
         {/* Brand Header */}
         <div className="text-center mb-6">
-          <div className="flex items-center justify-center gap-2 mb-1.5">
-            <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shadow-md p-1 ${
-              isAdminMode ? 'bg-[#C9A24A] text-stone-950 font-bold' : 'bg-amber-600 text-white font-bold'
-            }`}>
-              {isAdminMode ? <ShieldCheck className="w-6 h-6 text-stone-900" /> : <span className="font-serif text-lg">{APP_CONFIG.logoMark}</span>}
+          <div className="flex items-center justify-center gap-2.5 mb-1.5">
+            <div className="w-11 h-11 rounded-2xl flex items-center justify-center shadow-lg p-1 bg-gradient-to-br from-orange-500 to-amber-600 text-white font-bold">
+              {isAdminMode ? <ShieldCheck className="w-6 h-6 text-white" /> : <span className="font-serif text-xl">{APP_CONFIG.logoMark}</span>}
             </div>
             <div className="text-left">
-              <h1 className={`font-serif text-xl sm:text-2xl font-bold tracking-tight leading-tight ${
-                isAdminMode ? 'text-[#C9A24A]' : 'text-stone-900'
-              }`}>
+              <h1 className="font-serif text-xl sm:text-2xl font-extrabold tracking-tight leading-tight text-white">
                 {APP_CONFIG.name}
               </h1>
-              <p className={`text-[11px] font-sans font-medium tracking-wide ${
-                isAdminMode ? 'text-stone-300' : 'text-stone-600'
-              }`}>
+              <p className="text-[11px] font-sans font-medium tracking-wide text-stone-300">
                 {APP_CONFIG.subtitle} • {isAdminMode ? (lang === 'ta' ? 'நிர்வாக அறை' : 'Admin Portal') : (lang === 'ta' ? 'அங்கீகாரப் பக்கம்' : 'Authentication')}
               </p>
             </div>
           </div>
-          <p className={`text-xs mt-2 italic font-serif ${
-            isAdminMode ? 'text-amber-200/90' : 'text-stone-700'
-          }`}>
+          <p className="text-xs mt-2 italic font-serif text-amber-300/90">
             {lang === 'ta' ? APP_CONFIG.tagline_ta : APP_CONFIG.tagline}
           </p>
         </div>
@@ -221,8 +209,8 @@ export default function LoginPage({ onLoginSuccess, onContinueGuest, lang = 'ta'
             }}
             className={`flex-1 py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5 min-h-[44px] ${
               !isAdminMode
-                ? 'bg-amber-600 text-white shadow-sm'
-                : 'text-stone-400 hover:text-stone-200'
+                ? 'bg-gradient-to-r from-orange-500 to-amber-600 text-white shadow-md shadow-orange-500/20'
+                : 'text-stone-400 hover:text-white'
             }`}
           >
             <User className="w-3.5 h-3.5" />
@@ -238,8 +226,8 @@ export default function LoginPage({ onLoginSuccess, onContinueGuest, lang = 'ta'
             }}
             className={`flex-1 py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5 min-h-[44px] ${
               isAdminMode
-                ? 'bg-[#C9A24A] text-stone-950 shadow-sm font-bold'
-                : 'text-stone-600 hover:text-stone-900'
+                ? 'bg-gradient-to-r from-orange-500 to-amber-600 text-white shadow-md shadow-orange-500/20'
+                : 'text-stone-400 hover:text-white'
             }`}
           >
             <Lock className="w-3.5 h-3.5" />
@@ -252,23 +240,17 @@ export default function LoginPage({ onLoginSuccess, onContinueGuest, lang = 'ta'
           <motion.div
             initial={{ opacity: 0, y: -6 }}
             animate={{ opacity: 1, y: 0 }}
-            className={`mb-4 p-3 rounded-2xl text-xs flex items-center gap-2 ${
-              isAdminMode
-                ? 'bg-rose-950/70 border border-rose-800 text-rose-200'
-                : 'bg-rose-50 border border-rose-200 text-rose-800'
-            }`}
+            className="mb-4 p-3 rounded-2xl text-xs flex items-center gap-2 bg-rose-950/80 border border-rose-500/40 text-rose-200"
           >
-            <AlertCircle className="w-4 h-4 shrink-0 text-rose-500" />
-            <span>{error}</span>
+            <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
+            <span className="leading-snug">{error}</span>
           </motion.div>
         )}
 
         {/* Credentials Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className={`block text-xs font-bold mb-1.5 ${
-              isAdminMode ? 'text-stone-300' : 'text-stone-700'
-            }`}>
+            <label className="block text-xs font-bold mb-1.5 text-stone-200">
               {isAdminMode
                 ? (lang === 'ta' ? 'நிர்வாகி பயனர்பெயர்' : 'Admin Username')
                 : (lang === 'ta' ? 'பயனர்பெயர் (Username)' : 'Username')}
@@ -280,11 +262,7 @@ export default function LoginPage({ onLoginSuccess, onContinueGuest, lang = 'ta'
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder={isAdminMode ? 'admin' : (lang === 'ta' ? 'உங்கள் பெயர்...' : 'Enter your name...')}
-                className={`w-full py-3 px-4 rounded-2xl text-sm outline-none transition border ${
-                  isAdminMode
-                    ? 'bg-stone-900/90 text-stone-100 border-stone-700 focus:border-[#C9A24A] focus:ring-1 focus:ring-[#C9A24A]'
-                    : 'bg-white/95 text-stone-900 border-stone-300 focus:border-amber-600 focus:ring-1 focus:ring-amber-500'
-                }`}
+                className="w-full py-3 px-4 rounded-2xl text-sm outline-none transition border bg-[#070C15] text-white border-stone-700/80 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 placeholder:text-stone-500 shadow-inner"
                 required
               />
             </div>
@@ -293,7 +271,7 @@ export default function LoginPage({ onLoginSuccess, onContinueGuest, lang = 'ta'
           {/* Optional Email for Registration */}
           {!isAdminMode && isRegistering && (
             <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}>
-              <label className="block text-xs font-bold mb-1.5 text-stone-700">
+              <label className="block text-xs font-bold mb-1.5 text-stone-200">
                 {lang === 'ta' ? 'மின்னஞ்சல் (விருப்பத்தேர்வு)' : 'Email (Optional)'}
               </label>
               <input
@@ -302,15 +280,13 @@ export default function LoginPage({ onLoginSuccess, onContinueGuest, lang = 'ta'
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="name@example.com"
-                className="w-full py-3 px-4 rounded-2xl text-sm outline-none bg-white/95 text-stone-900 border border-stone-300 focus:border-amber-600 focus:ring-1 focus:ring-amber-500"
+                className="w-full py-3 px-4 rounded-2xl text-sm outline-none bg-[#070C15] text-white border border-stone-700/80 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 placeholder:text-stone-500 shadow-inner"
               />
             </motion.div>
           )}
 
           <div>
-            <label className={`block text-xs font-bold mb-1.5 ${
-              isAdminMode ? 'text-stone-300' : 'text-stone-700'
-            }`}>
+            <label className="block text-xs font-bold mb-1.5 text-stone-200">
               {lang === 'ta' ? 'கடவுச்சொல் (Password)' : 'Password'}
             </label>
             <div className="relative">
@@ -320,26 +296,20 @@ export default function LoginPage({ onLoginSuccess, onContinueGuest, lang = 'ta'
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className={`w-full py-3 px-4 pr-11 rounded-2xl text-sm outline-none transition border ${
-                  isAdminMode
-                    ? 'bg-stone-900/90 text-stone-100 border-stone-700 focus:border-[#C9A24A] focus:ring-1 focus:ring-[#C9A24A]'
-                    : 'bg-white/95 text-stone-900 border-stone-300 focus:border-amber-600 focus:ring-1 focus:ring-amber-500'
-                }`}
+                className="w-full py-3 px-4 pr-11 rounded-2xl text-sm outline-none transition border bg-[#070C15] text-white border-stone-700/80 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 placeholder:text-stone-500 shadow-inner"
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className={`absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-md transition ${
-                  isAdminMode ? 'text-stone-400 hover:text-stone-200' : 'text-stone-500 hover:text-stone-800'
-                }`}
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-md text-stone-400 hover:text-white transition"
                 title={showPassword ? 'Hide password' : 'Show password'}
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
             {isRegistering && (
-              <p className="text-[11px] text-stone-600 mt-1">
+              <p className="text-[11px] text-stone-400 mt-1">
                 {lang === 'ta' ? 'குறைந்தது 6 எழுத்துக்கள் இருக்க வேண்டும்.' : 'Must be at least 6 characters.'}
               </p>
             )}
@@ -349,11 +319,7 @@ export default function LoginPage({ onLoginSuccess, onContinueGuest, lang = 'ta'
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-3 px-4 rounded-2xl font-bold text-sm shadow-md flex items-center justify-center gap-2 transition-transform active:scale-[0.98] min-h-[44px] ${
-              isAdminMode
-                ? 'bg-[#C9A24A] hover:bg-[#b89139] text-stone-950'
-                : 'bg-amber-600 hover:bg-amber-700 text-white'
-            }`}
+            className="w-full py-3 px-4 rounded-2xl font-bold text-sm shadow-lg shadow-orange-500/25 flex items-center justify-center gap-2 transition-transform active:scale-[0.98] min-h-[44px] bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white"
           >
             {loading ? (
               <span>{lang === 'ta' ? 'சரிபார்க்கிறது...' : 'Authenticating...'}</span>
@@ -381,7 +347,7 @@ export default function LoginPage({ onLoginSuccess, onContinueGuest, lang = 'ta'
                 setIsRegistering(!isRegistering);
                 setError('');
               }}
-              className="text-xs text-amber-800 hover:text-amber-950 font-bold underline min-h-[44px] flex items-center justify-center mx-auto"
+              className="text-xs text-orange-400 hover:text-orange-300 font-bold underline min-h-[44px] flex items-center justify-center mx-auto transition-colors"
             >
               {isRegistering
                 ? (lang === 'ta' ? 'ஏற்கனவே கணக்கு உள்ளதா? உள்நுழையவும்' : 'Already registered? Log In')
@@ -392,13 +358,13 @@ export default function LoginPage({ onLoginSuccess, onContinueGuest, lang = 'ta'
 
         {/* Continue as Guest option (Behind allowGuest flag) */}
         {APP_CONFIG.allowGuest && (
-          <div className="mt-4 pt-4 border-t border-stone-200 text-center">
+          <div className="mt-4 pt-4 border-t border-white/10 text-center">
             <button
               type="button"
               onClick={onContinueGuest}
-              className="text-xs text-stone-600 hover:text-stone-900 font-semibold flex items-center justify-center gap-1.5 mx-auto py-2 px-3 rounded-xl hover:bg-stone-100 min-h-[44px]"
+              className="text-xs text-stone-300 hover:text-white font-semibold flex items-center justify-center gap-1.5 mx-auto py-2 px-3 rounded-xl hover:bg-white/5 min-h-[44px] transition-colors"
             >
-              <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+              <Sparkles className="w-3.5 h-3.5 text-orange-400" />
               <span>{lang === 'ta' ? 'விருந்தினராக தொடரவும்' : 'Continue as guest'}</span>
             </button>
           </div>

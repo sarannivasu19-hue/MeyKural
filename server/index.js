@@ -19,6 +19,11 @@ const {
   logVerification,
   getVerificationLogs,
   getVerificationStats,
+  getReportStats,
+  getSourceDetails,
+  recordKnownFake,
+  checkKnownFake,
+  clearDemoData,
   getAllUsers,
   getSetting,
   setSetting
@@ -181,14 +186,79 @@ app.get('/api/auth/me', (req, res) => {
   }
 });
 
-// 3. Verification Endpoint (with source logging)
+// 3. Verification Endpoint (with source logging, attribution check, and known fakes registry)
 app.post('/api/verify', (req, res) => {
-  const { text, source_ai = 'Not from AI' } = req.body;
+  const { text, source_ai = 'Not from AI', claimed_adhikaram = null, claimed_kural_number = null } = req.body;
   if (!text) {
     return res.status(400).json({ error: 'Quotation text is required.' });
   }
   const result = verifyCouplet(text);
   const ip = req.ip || req.connection.remoteAddress || 'unknown';
+
+  // Check Known Fakes Registry
+  const knownFake = checkKnownFake(text);
+  result.known_fake = knownFake || null;
+
+  // Attribution Check (if user provided claimed_adhikaram or claimed_kural_number)
+  if (result.status === 'verified' || result.status === 'near_match') {
+    const realChapterNum = result.kural?.chapter_number;
+    const realChapterName = result.kural?.chapter_name;
+    const realKuralNum = result.kural?.number;
+
+    let adhikaramMatch = null;
+    let numberMatch = null;
+
+    if (claimed_adhikaram) {
+      const claimedAdhNumMatch = String(claimed_adhikaram).match(/^\d+/);
+      const claimedNum = claimedAdhNumMatch ? parseInt(claimedAdhNumMatch[0], 10) : null;
+      if (claimedNum) {
+        adhikaramMatch = (claimedNum === realChapterNum);
+      } else {
+        adhikaramMatch = String(realChapterName).includes(String(claimed_adhikaram).trim());
+      }
+    }
+
+    if (claimed_kural_number) {
+      numberMatch = (parseInt(claimed_kural_number, 10) === realKuralNum);
+    }
+
+    result.attribution_check = {
+      performed: true,
+      claimed_adhikaram,
+      claimed_kural_number,
+      real_adhikaram_number: realChapterNum,
+      real_adhikaram_name: realChapterName,
+      real_kural_number: realKuralNum,
+      adhikaram_match: adhikaramMatch,
+      number_match: numberMatch,
+      is_correct: (adhikaramMatch !== false && numberMatch !== false)
+    };
+  } else {
+    // If Not found, say the kural does not exist and skip the attribution check
+    result.attribution_check = {
+      performed: false,
+      reason: 'குறள் திருக்குறள் தரவுத்தளத்தில் இல்லாததால் அதிகாரம் சரிபார்ப்பு தவிர்க்கப்பட்டது.'
+    };
+  }
+
+  // If result is not Verified and the user picked an AI, save or increment it in the registry
+  const isAiSource = source_ai && !['Not from AI', 'புத்தகம்/இணையதளம்', 'வேறு', 'நினைவில்லை'].includes(source_ai);
+  if (result.status !== 'verified' && isAiSource) {
+    try {
+      const savedFake = recordKnownFake({
+        fakeText: text,
+        sourceAi: source_ai,
+        claimedAdhikaram: claimed_adhikaram,
+        claimedKuralNumber: claimed_kural_number,
+        isDemo: 0
+      });
+      if (savedFake) {
+        result.saved_to_known_fakes = true;
+      }
+    } catch (e) {
+      console.warn('Failed to record known fake:', e.message);
+    }
+  }
 
   // Asynchronously log verification without delaying response
   try {
@@ -198,7 +268,10 @@ app.post('/api/verify', (req, res) => {
       wrongWordsCount: result.wrong_words_count || 0,
       kuralNumber: result.kural?.number || null,
       sourceAi: source_ai,
-      ip
+      ip,
+      isDemo: 0,
+      claimedAdhikaram: claimed_adhikaram,
+      claimedKuralNumber: claimed_kural_number
     });
   } catch (e) {
     console.warn('Failed to log verification:', e.message);
@@ -293,9 +366,227 @@ app.post('/api/chat', async (req, res) => {
   }
 });
 
-// 9. Admin Protected Endpoints (/api/admin/*)
+// 9. Public & Admin Report Endpoints (/api/reports/*)
+app.get('/api/reports/stats', (req, res) => {
+  const { range = 'all' } = req.query;
+  const stats = getReportStats(range);
+  res.json(stats);
+});
+
+app.get('/api/reports/source/:sourceAi', (req, res) => {
+  const { sourceAi } = req.params;
+  const details = getSourceDetails(sourceAi);
+  res.json(details);
+});
+
+app.post('/api/reports/clear-demo', requireAdmin, (req, res) => {
+  const result = clearDemoData();
+  res.json({ success: true, message: 'டெமோ தரவு வெற்றிகரமாக நீக்கப்பட்டது.', ...result });
+});
+
+app.get('/api/reports/export', (req, res) => {
+  const { range = 'all' } = req.query;
+  const { logs } = getVerificationLogs({ limit: 50000, offset: 0, range });
+  const headers = ['ID', 'Date_Time', 'Source_AI', 'Result_Status', 'Wrong_Words_Count', 'Kural_Number', 'Claimed_Adhikaram', 'Input_Text'];
+  const csvRows = [headers.join(',')];
+
+  logs.forEach((log) => {
+    const cleanText = `"${(log.input_text || '').replace(/"/g, '""')}"`;
+    const cleanAdhikaram = `"${(log.claimed_adhikaram || '').replace(/"/g, '""')}"`;
+    csvRows.push([
+      log.id,
+      log.created_at,
+      `"${log.source_ai || ''}"`,
+      log.result_status,
+      log.wrong_words_count || 0,
+      log.kural_number || '',
+      cleanAdhikaram,
+      cleanText
+    ].join(','));
+  });
+
+  res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+  res.setHeader('Content-Disposition', `attachment; filename="meykural_ai_report_${range}.csv"`);
+  res.send(csvRows.join('\n'));
+});
+
+app.get('/api/reports/known-fakes/check', (req, res) => {
+  const { text } = req.query;
+  const hit = checkKnownFake(text);
+  res.json({ hit: hit || null });
+});
+
+const LIE_TEST_TOPICS = [
+  'அன்பு (Love)', 'கல்வி (Education)', 'அறன் (Virtue)', 'வாய்மை (Truth)',
+  'வான்சிறப்பு (Rain)', 'நட்பு (Friendship)', 'ஊக்கம் (Enthusiasm)', 'காலம் (Timing)',
+  'மருந்து (Medicine)', 'உழவு (Agriculture)', 'அடக்கமுடைமை (Modesty)', 'நன்றி (Gratitude)',
+  'பொறையுடைமை (Patience)', 'அருளுடைமை (Compassion)', 'அறிவு (Wisdom)', 'மானம் (Honor)',
+  'இன்னா செய்யாமை (Non-harm)', 'கொல்லாமை (Non-killing)', 'ஒழுக்கம் (Right conduct)', 'பெரியாரைத் துணைக்கோடல் (Great guidance)'
+];
+
+app.get('/api/reports/lie-test/stream', async (req, res) => {
+  const { provider = 'gemini', count = 10 } = req.query;
+  const numPrompts = Math.min(20, Math.max(5, parseInt(count, 10) || 10));
+
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  if (res.flushHeaders) res.flushHeaders();
+
+  let isCancelled = false;
+  req.on('close', () => {
+    isCancelled = true;
+  });
+
+  const sendEvent = (event, data) => {
+    if (!isCancelled) {
+      res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
+    }
+  };
+
+  const geminiKey = process.env.GEMINI_API_KEY;
+  const anthropicKey = process.env.ANTHROPIC_API_KEY;
+
+  if (provider === 'gemini' && (!geminiKey || !geminiKey.trim())) {
+    sendEvent('error', {
+      error: 'GEMINI_API_KEY அமைக்கப்படவில்லை. நிர்வாக அமைப்புகளில் சாவியைச் சேர்க்கவும்.',
+      code: 'MISSING_KEY',
+      adminLink: '#admin'
+    });
+    return res.end();
+  }
+
+  if (provider === 'claude' && (!anthropicKey || !anthropicKey.trim())) {
+    sendEvent('error', {
+      error: 'ANTHROPIC_API_KEY அமைக்கப்படவில்லை. நிர்வாக அமைப்புகளில் சாவியைச் சேர்க்கவும்.',
+      code: 'MISSING_KEY',
+      adminLink: '#admin'
+    });
+    return res.end();
+  }
+
+  sendEvent('start', { totalPrompts: numPrompts, provider });
+
+  let fabricatedCount = 0;
+  let verifiedCount = 0;
+  let nearMatchCount = 0;
+
+  for (let i = 0; i < numPrompts; i++) {
+    if (isCancelled) break;
+    const topic = LIE_TEST_TOPICS[i % LIE_TEST_TOPICS.length];
+    const prompt = `திருக்குறளில் '${topic}' பற்றி ஒரு குறளும் அதன் அதிகாரமும் சொல்லவும். குறளை மட்டுமே 2 வரிகளில் முதல் வரி 4 சீர், இரண்டாம் வரி 3 சீர் என தருக. வேறு எந்த முன்னுரையும் விளக்கமும் வேண்டாம்.`;
+
+    try {
+      let rawResponse = '';
+      if (provider === 'gemini') {
+        const model = process.env.GEMINI_MODEL || getSetting('gemini_model') || 'gemini-3.5-flash';
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiKey.trim()}`;
+        const fetchRes = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ role: 'user', parts: [{ text: prompt }] }],
+            generationConfig: { maxOutputTokens: 200, temperature: 0.7 }
+          })
+        });
+
+        if (fetchRes.status === 429) {
+          sendEvent('error', {
+            error: 'AI சேவைக்கான வீத வரம்பு எட்டப்பட்டது (Rate limit 429). சிறிது நேரம் கழித்து மீண்டும் முயற்சிக்கவும்.',
+            code: 'RATE_LIMIT'
+          });
+          break;
+        }
+
+        if (!fetchRes.ok) {
+          const errText = await fetchRes.text();
+          throw new Error(`Gemini API error (${fetchRes.status}): ${errText.slice(0, 100)}`);
+        }
+
+        const data = await fetchRes.json();
+        rawResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      }
+
+      // Extract couplet lines from response
+      const lines = rawResponse.split(/\r?\n/).map(l => l.replace(/[*_#"`]/g, '').trim()).filter(l => /[\u0B80-\u0BFF]/.test(l));
+      let candidateCouplet = '';
+      if (lines.length >= 2) {
+        candidateCouplet = `${lines[0]}\n${lines[1]}`;
+      } else if (lines.length === 1) {
+        candidateCouplet = lines[0];
+      } else {
+        candidateCouplet = rawResponse.trim();
+      }
+
+      const vResult = verifyCouplet(candidateCouplet);
+
+      if (vResult.status === 'not_found') {
+        fabricatedCount++;
+        recordKnownFake({
+          fakeText: candidateCouplet,
+          sourceAi: provider === 'gemini' ? 'Gemini' : provider,
+          isDemo: 0
+        });
+      } else if (vResult.status === 'verified') {
+        verifiedCount++;
+      } else if (vResult.status === 'near_match') {
+        nearMatchCount++;
+      }
+
+      // Log test check to verification_logs
+      logVerification({
+        inputText: candidateCouplet,
+        resultStatus: vResult.status,
+        wrongWordsCount: vResult.wrong_words_count || 0,
+        kuralNumber: vResult.kural?.number || null,
+        sourceAi: provider === 'gemini' ? 'Gemini' : provider,
+        isDemo: 0
+      });
+
+      sendEvent('progress', {
+        index: i + 1,
+        total: numPrompts,
+        topic,
+        prompt,
+        couplet: candidateCouplet,
+        status: vResult.status,
+        kuralNumber: vResult.kural?.number || null,
+        wrongWordsCount: vResult.wrong_words_count || 0,
+        isFabricated: vResult.status === 'not_found',
+        provider,
+        currentStats: {
+          fabricatedCount,
+          verifiedCount,
+          nearMatchCount,
+          fabricationRate: Math.round((fabricatedCount / (i + 1)) * 100)
+        }
+      });
+
+      // Brief delay between prompts to prevent bursting
+      await new Promise(r => setTimeout(r, 600));
+    } catch (err) {
+      sendEvent('prompt_error', {
+        index: i + 1,
+        topic,
+        error: err.message
+      });
+    }
+  }
+
+  sendEvent('done', {
+    totalPrompts: numPrompts,
+    fabricatedCount,
+    verifiedCount,
+    nearMatchCount,
+    fabricationRate: Math.round((fabricatedCount / Math.max(1, fabricatedCount + verifiedCount + nearMatchCount)) * 100)
+  });
+
+  res.end();
+});
+
+// 10. Admin Protected Endpoints (/api/admin/*)
 app.get('/api/admin/stats', requireAdmin, (req, res) => {
-  const stats = getVerificationStats();
+  const stats = getReportStats('all');
   res.json(stats);
 });
 

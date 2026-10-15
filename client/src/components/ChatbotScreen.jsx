@@ -200,32 +200,32 @@ export default function ChatbotScreen({ lang = 'ta' }) {
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-6 sm:py-8 font-serif">
-      {/* Header */}
-      <div className="text-center mb-6">
-        <h2 className="text-2xl sm:text-3xl font-bold text-stone-900 dark:text-stone-100 flex items-center justify-center gap-2">
+    <div className="max-w-3xl mx-auto px-3 sm:px-4 py-4 sm:py-6 font-sans">
+      {/* Header with Frosted Glass Shield (Protects against statue photo background) */}
+      <div className="bg-[#0D1522]/90 backdrop-blur-2xl rounded-3xl p-5 sm:p-6 border border-white/10 shadow-2xl mb-5 text-center">
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white flex items-center justify-center gap-2">
           <span>{chatLang === 'ta' ? 'வள்ளுவர் AI உதவியாளர்' : 'Valluvar AI Scholar'}</span>
-          <MessageSquareQuote className="w-6 h-6 text-amber-600" />
+          <MessageSquareQuote className="w-6 h-6 text-orange-400" />
         </h2>
-        <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 mt-1">
+        <p className="text-xs sm:text-sm text-stone-300 mt-1 max-w-xl mx-auto">
           {chatLang === 'ta'
             ? 'அசல் 1,330 திருக்குறள்களின் அடிப்படையில் மட்டுமே உரைக்கும். கற்பனைக் குறள்களைக் கூறாது.'
             : 'Authoritative RAG retrieval strictly grounded in 1,330 canonical couplets. No hallucinations.'}
         </p>
 
         {/* Status Badge & Controls */}
-        <div className="flex flex-wrap items-center justify-center gap-2 mt-3">
+        <div className="flex flex-wrap items-center justify-center gap-2 mt-3.5">
           {chatHealth && (
             <span
               className={`text-[11px] px-3 py-1 rounded-full font-semibold border flex items-center gap-1.5 ${
                 chatHealth.ok
-                  ? 'bg-emerald-50 text-emerald-800 border-emerald-300 dark:bg-emerald-950 dark:text-emerald-300'
+                  ? 'bg-emerald-950/80 text-emerald-300 border-emerald-500/40'
                   : chatHealth.status === 'missing_key'
-                  ? 'bg-amber-50 text-amber-800 border-amber-300 dark:bg-amber-950 dark:text-amber-300'
-                  : 'bg-rose-50 text-rose-800 border-rose-300 dark:bg-rose-950 dark:text-rose-300'
+                  ? 'bg-amber-950/80 text-amber-300 border-amber-500/40'
+                  : 'bg-rose-950/80 text-rose-300 border-rose-500/40'
               }`}
             >
-              <span className={`w-2 h-2 rounded-full ${chatHealth.ok ? 'bg-emerald-500 animate-pulse' : chatHealth.status === 'missing_key' ? 'bg-amber-500' : 'bg-rose-500'}`} />
+              <span className={`w-2 h-2 rounded-full ${chatHealth.ok ? 'bg-emerald-400 animate-pulse' : chatHealth.status === 'missing_key' ? 'bg-amber-400' : 'bg-rose-400'}`} />
               {chatHealth.ok
                 ? `Gemini AI (${chatHealth.model || 'gemini-3.5-flash'}) தயார்`
                 : chatHealth.reason || 'AI சாவி இல்லை (ஆஃப்லைன்)'}
@@ -235,7 +235,7 @@ export default function ChatbotScreen({ lang = 'ta' }) {
           {/* Lang Toggle */}
           <button
             onClick={() => setChatLang(chatLang === 'ta' ? 'en' : 'ta')}
-            className="text-[11px] font-bold px-2.5 py-1 rounded-full border border-stone-300 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-800"
+            className="text-[11px] font-bold px-3 py-1 rounded-full border border-white/10 bg-white/5 hover:bg-white/15 text-stone-200 transition-colors"
           >
             {chatLang === 'ta' ? 'தமிழ்' : 'English'}
           </button>
@@ -243,7 +243,7 @@ export default function ChatbotScreen({ lang = 'ta' }) {
           {/* Clear Chat */}
           <button
             onClick={handleClear}
-            className="text-[11px] text-stone-500 hover:text-stone-800 dark:hover:text-stone-200 flex items-center gap-1 px-2 py-1 rounded"
+            className="text-[11px] text-stone-400 hover:text-white flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/5 border border-white/10 transition-colors"
             title="Clear Chat"
           >
             <Trash2 className="w-3.5 h-3.5" />
@@ -253,15 +253,15 @@ export default function ChatbotScreen({ lang = 'ta' }) {
 
         {/* Friendly banner when key is missing or invalid */}
         {chatHealth && !chatHealth.ok && (
-          <div className="mt-3 p-3 max-w-xl mx-auto rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-xs text-amber-800 dark:text-amber-300 flex items-start gap-2 text-left">
-            <AlertTriangle className="w-4 h-4 shrink-0 text-amber-600 mt-0.5" />
+          <div className="mt-3.5 p-3 max-w-xl mx-auto rounded-2xl bg-amber-950/60 border border-amber-500/30 text-xs text-amber-200 flex items-start gap-2 text-left">
+            <AlertTriangle className="w-4 h-4 shrink-0 text-amber-400 mt-0.5" />
             <div>
               <p className="font-bold">
                 {chatHealth.status === 'missing_key'
                   ? 'Gemini API சாவி அமைக்கப்படவில்லை'
                   : 'Gemini API சாவி பிழை'}
               </p>
-              <p className="text-[11px] mt-0.5 text-stone-600 dark:text-stone-400">
+              <p className="text-[11px] mt-0.5 text-stone-300">
                 {chatHealth.reason}. AI அரட்டை தற்காலிகமாக இடைநிறுத்தப்பட்டுள்ளது. எனினும் நூலகம், வினாடி வினா, சரிபார்ப்பு உள்ளிட்ட அனைத்துப் பகுதிகளும் வழக்கம் போல முழுமையாக இயங்கும்.
               </p>
             </div>
@@ -270,14 +270,14 @@ export default function ChatbotScreen({ lang = 'ta' }) {
       </div>
 
       {/* Messages Container */}
-      <div className="bg-white dark:bg-stone-900 rounded-3xl p-4 sm:p-6 shadow-xl border border-stone-200 dark:border-stone-800 min-h-[420px] max-h-[580px] overflow-y-auto space-y-4 mb-4">
+      <div className="bg-[#0D1522]/90 backdrop-blur-2xl rounded-3xl p-4 sm:p-6 shadow-2xl border border-white/10 min-h-[420px] max-h-[580px] overflow-y-auto space-y-4 mb-4">
         {messages.map((msg) => (
           <div
             key={msg.id}
             className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             {msg.role === 'assistant' && (
-              <div className="w-8 h-8 rounded-full bg-amber-600 flex items-center justify-center text-white shrink-0 shadow-sm text-xs font-bold">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center text-white shrink-0 shadow-md text-xs font-bold font-serif">
                 வ
               </div>
             )}
@@ -285,38 +285,38 @@ export default function ChatbotScreen({ lang = 'ta' }) {
             <div
               className={`max-w-[85%] sm:max-w-[78%] p-4 rounded-2xl text-xs sm:text-sm leading-relaxed ${
                 msg.role === 'user'
-                  ? 'bg-amber-600 text-white rounded-tr-none'
-                  : 'bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 rounded-tl-none border border-stone-200 dark:border-stone-800 shadow-sm'
+                  ? 'bg-gradient-to-r from-orange-500 to-amber-600 text-white rounded-tr-none shadow-md shadow-orange-500/20'
+                  : 'bg-[#070C15]/90 text-stone-100 rounded-tl-none border border-white/10 shadow-sm'
               }`}
             >
-              <div className="whitespace-pre-line leading-relaxed">
+              <div className="whitespace-pre-line leading-relaxed text-stone-100">
                 {msg.text}
               </div>
 
               {/* Self-Verified Canonical Cards */}
               {msg.verifiedCards && msg.verifiedCards.length > 0 && (
-                <div className="mt-4 pt-3 border-t border-stone-200 dark:border-stone-800 space-y-2">
-                  <div className="flex items-center gap-1.5 text-[11px] font-bold text-emerald-700 dark:text-emerald-400">
+                <div className="mt-4 pt-3 border-t border-white/10 space-y-2">
+                  <div className="flex items-center gap-1.5 text-[11px] font-bold text-emerald-400">
                     <ShieldCheck className="w-3.5 h-3.5" />
                     <span>{chatLang === 'ta' ? 'சுய-சரிபார்க்கப்பட்ட அசல் குறள்' : 'Self-Verified Canonical Couplet'}</span>
                   </div>
                   {msg.verifiedCards.map((c, i) => (
                     <div
                       key={i}
-                      className="p-3 rounded-xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800"
+                      className="p-3 rounded-xl bg-[#0D1522] border border-white/10"
                     >
-                      <div className="flex justify-between text-[11px] font-bold text-amber-700 dark:text-amber-400 mb-1">
+                      <div className="flex justify-between text-[11px] font-bold text-orange-400 mb-1">
                         <span>குறள் #{c.number} • {c.chapter}</span>
                         <span>{c.translation}</span>
                       </div>
-                      <div className="font-serif font-bold text-stone-900 dark:text-stone-100 leading-kural">
+                      <div className="font-serif font-bold text-white leading-kural">
                         {c.line1}
                       </div>
-                      <div className="font-serif font-bold text-stone-900 dark:text-stone-100 leading-kural">
+                      <div className="font-serif font-bold text-white leading-kural">
                         {c.line2}
                       </div>
                       {c.meaning && (
-                        <p className="mt-1 text-[11px] text-stone-600 dark:text-stone-400">
+                        <p className="mt-1 text-[11px] text-stone-300">
                           {c.meaning}
                         </p>
                       )}
@@ -329,17 +329,17 @@ export default function ChatbotScreen({ lang = 'ta' }) {
               <div className="mt-2 pt-1 flex justify-end gap-2">
                 <button
                   onClick={() => copyMessage(msg.id, msg.text)}
-                  className="text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 text-[10px] flex items-center gap-1"
+                  className="text-stone-400 hover:text-white text-[10px] flex items-center gap-1 transition-colors"
                 >
-                  {copiedId === msg.id ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
+                  {copiedId === msg.id ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
                   <span>{copiedId === msg.id ? 'Copied' : 'Copy'}</span>
                 </button>
               </div>
             </div>
 
             {msg.role === 'user' && (
-              <div className="w-8 h-8 rounded-full bg-stone-700 flex items-center justify-center text-white shrink-0 shadow-sm text-xs">
-                <User className="w-4 h-4" />
+              <div className="w-8 h-8 rounded-full bg-stone-700 flex items-center justify-center text-white shrink-0 shadow-sm text-xs font-semibold">
+                <User className="w-4 h-4 text-stone-200" />
               </div>
             )}
           </div>
@@ -348,14 +348,14 @@ export default function ChatbotScreen({ lang = 'ta' }) {
         {/* Typing indicator */}
         {loading && (
           <div className="flex gap-3 justify-start">
-            <div className="w-8 h-8 rounded-full bg-amber-600 flex items-center justify-center text-white shrink-0 animate-pulse text-xs font-bold">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center text-white shrink-0 animate-pulse text-xs font-bold font-serif">
               வ
             </div>
-            <div className="p-3 rounded-2xl bg-stone-100 dark:bg-stone-800 text-xs text-stone-500 rounded-tl-none flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-amber-600 animate-bounce" />
-              <span className="w-2 h-2 rounded-full bg-amber-600 animate-bounce [animation-delay:0.2s]" />
-              <span className="w-2 h-2 rounded-full bg-amber-600 animate-bounce [animation-delay:0.4s]" />
-              <span className="ml-1 text-[11px]">
+            <div className="p-3 rounded-2xl bg-[#070C15]/90 text-xs text-stone-300 rounded-tl-none border border-white/10 flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-orange-400 animate-bounce" />
+              <span className="w-2 h-2 rounded-full bg-orange-400 animate-bounce [animation-delay:0.2s]" />
+              <span className="w-2 h-2 rounded-full bg-orange-400 animate-bounce [animation-delay:0.4s]" />
+              <span className="ml-1 text-[11px] text-stone-300">
                 {chatLang === 'ta' ? '1,330 குறள்களில் சரிபார்க்கிறது...' : 'Verifying in canonical couplets...'}
               </span>
             </div>
@@ -370,7 +370,7 @@ export default function ChatbotScreen({ lang = 'ta' }) {
           <button
             key={idx}
             onClick={() => handleSend(p.text)}
-            className="text-xs px-3 py-1.5 rounded-xl bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 hover:bg-amber-600 hover:text-white transition-all border border-stone-200 dark:border-stone-700 shadow-xs"
+            className="text-xs px-3 py-1.5 rounded-xl bg-[#0D1522]/90 hover:bg-orange-500/20 text-stone-200 hover:text-white transition-all border border-white/10 shadow-xs"
           >
             {p.label}
           </button>
@@ -388,14 +388,14 @@ export default function ChatbotScreen({ lang = 'ta' }) {
         <button
           type="button"
           onClick={handleVoice}
-          className={`px-3 py-3 rounded-2xl border transition-all ${
+          className={`px-3.5 py-3 rounded-2xl border transition-all ${
             isListening
-              ? 'bg-rose-100 text-rose-800 border-rose-300 animate-pulse'
-              : 'bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-300 border-stone-300 dark:border-stone-700'
+              ? 'bg-rose-950 text-rose-300 border-rose-500 animate-pulse'
+              : 'bg-[#0D1522] hover:bg-[#152033] text-stone-300 border-white/10'
           }`}
           title="Voice Input (ta-IN)"
         >
-          <Mic className="w-4 h-4 text-rose-600" />
+          <Mic className="w-4 h-4 text-orange-400" />
         </button>
 
         <input
@@ -403,13 +403,13 @@ export default function ChatbotScreen({ lang = 'ta' }) {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder={chatLang === 'ta' ? 'குறள் அல்லது பொருள் குறித்துக் கேளுங்கள்...' : 'Ask about any couplet or theme...'}
-          className="flex-1 py-3 px-4 rounded-2xl bg-white dark:bg-stone-900 border-2 border-stone-200 dark:border-stone-800 focus:border-amber-600 focus:ring-1 focus:ring-amber-500 text-sm text-stone-900 dark:text-stone-100 outline-none shadow-xs"
+          className="flex-1 py-3 px-4 rounded-2xl bg-[#070C15] border border-stone-700/80 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 text-sm text-white placeholder:text-stone-500 outline-none shadow-inner"
         />
 
         <button
           type="submit"
           disabled={loading || !input.trim()}
-          className="px-5 rounded-2xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-sm shadow-md active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center"
+          className="px-5 rounded-2xl bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white font-bold text-sm shadow-md shadow-orange-500/20 active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center"
         >
           <Send className="w-4 h-4" />
         </button>
@@ -418,7 +418,7 @@ export default function ChatbotScreen({ lang = 'ta' }) {
           type="button"
           onClick={handleRegenerate}
           disabled={loading || messages.length <= 1}
-          className="p-3 rounded-2xl border border-stone-300 dark:border-stone-700 text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 disabled:opacity-40"
+          className="p-3 rounded-2xl border border-white/10 bg-[#0D1522] hover:bg-[#152033] text-stone-400 hover:text-white disabled:opacity-40 transition-colors"
           title="Regenerate"
         >
           <RotateCcw className="w-4 h-4" />

@@ -185,12 +185,12 @@ export default function PoliceGameScreen({ lang = 'ta' }) {
         <TamilVoiceQuiz lang={lang} />
       ) : (
         /* Hallucination Police Game Mode */
-        <div className="max-w-xl mx-auto font-serif">
+        <div className="max-w-xl mx-auto font-sans">
           {/* Header */}
           <div className="text-center mb-6">
-            <h2 className="text-2xl sm:text-3xl font-bold text-stone-100 flex items-center justify-center gap-2">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-white flex items-center justify-center gap-2">
               <span>{lang === 'ta' ? 'குறள் காவலர் விளையாட்டு' : 'Kural Police Game'}</span>
-              <Flame className="w-6 h-6 text-amber-500 fill-amber-500 animate-pulse" />
+              <Flame className="w-6 h-6 text-orange-400 fill-orange-400 animate-pulse" />
             </h2>
             <p className="text-xs sm:text-sm text-stone-300 mt-1">
               {lang === 'ta'
@@ -200,20 +200,20 @@ export default function PoliceGameScreen({ lang = 'ta' }) {
           </div>
 
       {/* Gamification Bar: Score, Streak, Progress */}
-      <div className="bg-white dark:bg-stone-900 rounded-2xl p-4 shadow-sm border border-stone-200 dark:border-stone-800 flex items-center justify-between mb-4">
+      <div className="bg-[#0D1522]/90 backdrop-blur-xl rounded-2xl p-4 shadow-xl border border-white/10 flex items-center justify-between mb-4 text-stone-100">
         {/* Score */}
         <div className="text-center">
           <span className="text-[10px] uppercase font-bold text-stone-400">
             {lang === 'ta' ? 'மதிப்பெண்' : 'Score'}
           </span>
-          <div className="text-xl font-bold font-mono text-stone-900 dark:text-stone-100">
+          <div className="text-xl font-bold font-mono text-white">
             {score}/{questions.length}
           </div>
         </div>
 
         {/* Streak with Fire Animation */}
-        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-50 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-800 text-amber-800 dark:text-amber-200">
-          <Flame className={`w-4 h-4 ${streak > 0 ? 'text-amber-500 fill-amber-500 animate-bounce' : 'text-stone-400'}`} />
+        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-950/80 border border-amber-500/40 text-amber-300">
+          <Flame className={`w-4 h-4 ${streak > 0 ? 'text-amber-400 fill-amber-400 animate-bounce' : 'text-stone-400'}`} />
           <span className="text-xs font-bold font-mono">{streak} {lang === 'ta' ? 'தொடர் வெற்றி' : 'Streak'}</span>
         </div>
 
@@ -222,7 +222,7 @@ export default function PoliceGameScreen({ lang = 'ta' }) {
           <span className="text-[10px] uppercase font-bold text-stone-400">
             {lang === 'ta' ? 'பதவி' : 'Badge'}
           </span>
-          <div className="text-xs font-bold text-stone-800 dark:text-stone-200 flex items-center gap-1">
+          <div className="text-xs font-bold text-stone-200 flex items-center gap-1">
             <span>{rank.icon}</span>
             <span>{lang === 'ta' ? rank.titleTa : rank.titleEn}</span>
           </div>
@@ -231,9 +231,9 @@ export default function PoliceGameScreen({ lang = 'ta' }) {
 
       {/* Progress Bar */}
       {!gameOver && questions.length > 0 && (
-        <div className="w-full bg-stone-200 dark:bg-stone-800 h-2 rounded-full overflow-hidden mb-6">
+        <div className="w-full bg-[#070C15] h-2 rounded-full overflow-hidden mb-6 border border-white/10">
           <div
-            className="bg-amber-600 h-full transition-all duration-300"
+            className="bg-gradient-to-r from-orange-500 to-amber-500 h-full transition-all duration-300"
             style={{ width: `${((currentIndex + 1) / questions.length) * 100}%` }}
           />
         </div>
@@ -246,19 +246,19 @@ export default function PoliceGameScreen({ lang = 'ta' }) {
           initial={{ scale: 0.96, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.25 }}
-          className="bg-white dark:bg-stone-900 rounded-3xl p-6 sm:p-8 shadow-xl border-2 border-stone-200 dark:border-stone-800 relative"
+          className="bg-[#0D1522]/90 backdrop-blur-2xl rounded-3xl p-6 sm:p-8 shadow-2xl border border-white/10 relative text-stone-100"
         >
           {/* Question Counter */}
           <div className="text-xs font-bold text-stone-400 mb-4 flex items-center justify-between">
             <span>{lang === 'ta' ? 'கேள்வி' : 'Question'} {currentIndex + 1} / {questions.length}</span>
-            <span className="text-[11px] px-2 py-0.5 rounded bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-300 font-semibold">
+            <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-orange-500/20 border border-orange-500/30 text-orange-300 font-semibold">
               {lang === 'ta' ? 'அசலா? போலியா?' : 'Real or Fake?'}
             </span>
           </div>
 
           {/* The Verse to Evaluate */}
-          <div className="my-6 py-6 px-4 bg-stone-50 dark:bg-stone-950 rounded-2xl border border-stone-200 dark:border-stone-800 text-center shadow-inner">
-            <div className="font-serif text-lg sm:text-xl font-bold text-stone-900 dark:text-stone-100 leading-kural whitespace-pre-line">
+          <div className="my-6 py-6 px-4 bg-[#070C15]/80 rounded-2xl border border-white/10 text-center shadow-inner">
+            <div className="font-serif text-lg sm:text-xl font-bold text-white leading-kural whitespace-pre-line">
               "{currentQ.text}"
             </div>
           </div>
@@ -272,27 +272,27 @@ export default function PoliceGameScreen({ lang = 'ta' }) {
                 exit={{ opacity: 0 }}
                 className={`p-4 rounded-2xl mb-6 border text-xs sm:text-sm ${
                   feedback.isCorrect
-                    ? 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200'
-                    : 'bg-rose-50 dark:bg-rose-950/60 border-rose-300 dark:border-rose-800 text-rose-900 dark:text-rose-200'
+                    ? 'bg-emerald-950/80 border-emerald-500/40 text-emerald-200'
+                    : 'bg-rose-950/80 border-rose-500/40 text-rose-200'
                 }`}
               >
                 <div className="font-bold flex items-center gap-1.5 text-base mb-1">
-                  {feedback.isCorrect ? <CheckCircle className="w-5 h-5 text-emerald-600" /> : <XCircle className="w-5 h-5 text-rose-600" />}
-                  <span>{feedback.title}</span>
+                  {feedback.isCorrect ? <CheckCircle className="w-5 h-5 text-emerald-400" /> : <XCircle className="w-5 h-5 text-rose-400" />}
+                  <span className="text-white">{feedback.title}</span>
                 </div>
-                <p className="opacity-95 leading-relaxed">{feedback.explanation}</p>
+                <p className="opacity-95 leading-relaxed text-stone-200">{feedback.explanation}</p>
 
                 {/* Highlight changed words if fake */}
                 {feedback.changedWords && feedback.changedWords.length > 0 && (
-                  <div className="mt-3 p-2.5 rounded-xl bg-white/80 dark:bg-black/40 border border-stone-300 dark:border-stone-700">
-                    <span className="text-[11px] font-bold text-stone-600 dark:text-stone-400 block mb-1">
+                  <div className="mt-3 p-2.5 rounded-xl bg-[#070C15]/90 border border-white/10">
+                    <span className="text-[11px] font-bold text-stone-400 block mb-1">
                       {lang === 'ta' ? 'மாற்றப்பட்ட சொல்:' : 'Altered Word:'}
                     </span>
                     {feedback.changedWords.map((cw, idx) => (
                       <div key={idx} className="flex items-center gap-2 font-bold text-xs">
-                        <span className="line-through text-rose-600">{cw.fakeWord}</span>
-                        <span>➔</span>
-                        <span className="text-emerald-600">{cw.realWord}</span>
+                        <span className="line-through text-rose-400">{cw.fakeWord}</span>
+                        <span className="text-stone-400">➔</span>
+                        <span className="text-emerald-400">{cw.realWord}</span>
                         <span className="text-stone-400 text-[10px] font-normal">
                           ({lang === 'ta' ? 'அசல் சொல்' : 'Original'})
                         </span>
@@ -303,7 +303,7 @@ export default function PoliceGameScreen({ lang = 'ta' }) {
 
                 <button
                   onClick={handleNext}
-                  className="mt-3 w-full py-2.5 rounded-xl bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 font-bold text-xs shadow-sm hover:opacity-90 transition-opacity"
+                  className="mt-3 w-full py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white font-bold text-xs shadow-md shadow-orange-500/20 active:scale-95 transition-all"
                 >
                   {currentIndex + 1 < questions.length
                     ? (lang === 'ta' ? 'அடுத்த குறள் ➔' : 'Next Couplet ➔')
@@ -339,42 +339,42 @@ export default function PoliceGameScreen({ lang = 'ta' }) {
         <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="bg-white dark:bg-stone-900 rounded-3xl p-6 sm:p-8 shadow-xl border border-stone-200 dark:border-stone-800 text-center"
+          className="bg-[#0D1522]/90 backdrop-blur-2xl rounded-3xl p-6 sm:p-8 shadow-2xl border border-white/10 text-center text-stone-100"
         >
           <div className="text-5xl mb-2">{rank.icon}</div>
-          <h3 className="text-2xl font-bold text-stone-900 dark:text-stone-100 mb-1">
+          <h3 className="text-2xl font-bold text-white mb-1">
             {lang === 'ta' ? 'சுற்று முடிந்தது!' : 'Round Complete!'}
           </h3>
-          <p className="text-xs text-stone-500 mb-6">
+          <p className="text-xs text-stone-300 mb-6">
             {lang === 'ta' ? 'உங்கள் இறுதி மதிப்பெண் & பதவி:' : 'Your final score & earned rank:'}
           </p>
 
-          <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 max-w-xs mx-auto mb-6">
-            <div className="text-3xl font-mono font-bold text-amber-700 dark:text-amber-300">
+          <div className="p-4 rounded-2xl bg-amber-950/40 border border-amber-500/30 max-w-xs mx-auto mb-6">
+            <div className="text-3xl font-mono font-bold text-amber-300">
               {score} / {questions.length} ({Math.round((score / questions.length) * 100)}%)
             </div>
-            <div className="text-xs font-bold text-stone-800 dark:text-stone-200 mt-1">
+            <div className="text-xs font-bold text-stone-200 mt-1">
               {lang === 'ta' ? rank.titleTa : rank.titleEn}
             </div>
-            <div className="text-[11px] text-stone-500 mt-1">
+            <div className="text-[11px] text-stone-400 mt-1">
               {lang === 'ta' ? 'அதிகபட்ச தொடர் வெற்றி:' : 'Max Streak:'} {maxStreak}
             </div>
           </div>
 
           {/* Local Leaderboard */}
           {leaderboard.length > 0 && (
-            <div className="mb-6 p-4 rounded-2xl bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800 text-left">
-              <div className="text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-2 flex items-center gap-1.5">
-                <Trophy className="w-4 h-4 text-amber-500" />
+            <div className="mb-6 p-4 rounded-2xl bg-[#070C15]/80 border border-white/10 text-left">
+              <div className="text-xs font-bold uppercase tracking-wider text-orange-400 mb-2 flex items-center gap-1.5">
+                <Trophy className="w-4 h-4 text-orange-400" />
                 <span>{lang === 'ta' ? 'உள்ளூர் முன்னிலை பட்டியல்' : 'Local Leaderboard'}</span>
               </div>
               <div className="space-y-1.5 text-xs">
                 {leaderboard.map((item, idx) => (
-                  <div key={idx} className="flex items-center justify-between py-1 border-b border-stone-100 dark:border-stone-800 last:border-0">
-                    <span className="font-semibold text-stone-700 dark:text-stone-300">
+                  <div key={idx} className="flex items-center justify-between py-1 border-b border-white/5 last:border-0">
+                    <span className="font-semibold text-stone-300">
                       #{idx + 1} • {item.score}/10 ({item.date} {item.time})
                     </span>
-                    <span className="font-mono text-amber-600 font-bold">
+                    <span className="font-mono text-orange-400 font-bold">
                       {item.maxStreak} streak
                     </span>
                   </div>
@@ -385,7 +385,7 @@ export default function PoliceGameScreen({ lang = 'ta' }) {
 
           <button
             onClick={startNewRound}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-sm shadow-md active:scale-95 transition-all"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white font-bold text-sm shadow-md shadow-orange-500/20 active:scale-95 transition-all"
           >
             <RotateCcw className="w-4 h-4" />
             <span>{lang === 'ta' ? 'புதிய சுற்று விளையாடு' : 'Play Again (New Set)'}</span>
