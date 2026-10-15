@@ -142,12 +142,82 @@ export default function TamilVoiceQuiz({ lang = 'ta' }) {
   const [score, setScore] = useState(0);
   const [userAnswers, setUserAnswers] = useState([]);
 
-  // Voice Recognition states
-  const [isListening, setIsListening] = useState(false);
+  // Voice Recognition states: 'ready' | 'recording' | 'processing' | 'captured' | 'error'
+  const [micState, setMicState] = useState('ready');
+  const isListening = micState === 'recording';
   const [voiceSupported, setVoiceSupported] = useState(true);
   const [voiceTranscript, setVoiceTranscript] = useState('');
   const [voiceFeedbackMsg, setVoiceFeedbackMsg] = useState('');
   const recognitionRef = useRef(null);
+  const finalTranscriptRef = useRef('');
+
+  // Keep a mutable ref to the active question to prevent stale closure bugs
+  // Initialized to null — synced via useEffect below after currentQ is defined
+  const currentQRef = useRef(null);
+
+
+  // Clean and normalize Tamil text for speech matching
+  const normalizeTamilSpeech = (text) => {
+    if (!text) return '';
+    return text
+      .normalize('NFC')
+      .replace(/[\u200B-\u200D\uFEFF\u00AD]/g, '')
+      .replace(/[.,;!?"'’‘“”«»()\[\]{}—–\-:/\\_`~*#@^+=<>|]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .toLowerCase();
+  };
+
+  // Match voice transcript against options
+  const handleVoiceMatch = (rawTranscript) => {
+    const q = currentQRef.current;
+    if (!q || isAnswerSubmitted) return;
+
+    const transcript = normalizeTamilSpeech(rawTranscript);
+    if (!transcript) return;
+
+    let matchedIdx = -1;
+
+    // 1. Direct match with option text
+    q.options.forEach((opt, idx) => {
+      const optClean = normalizeTamilSpeech(opt);
+      if (transcript.includes(optClean) || optClean.includes(transcript)) {
+        matchedIdx = idx;
+      }
+    });
+
+    // 2. Tamil option letter matching: அ, ஆ, இ, ஈ
+    if (matchedIdx === -1) {
+      if (/\b(?:அ|ஆப்ஷன்\s*அ|விருப்பம்\s*அ)\b/i.test(transcript) || transcript === 'அ') matchedIdx = 0;
+      else if (/\b(?:ஆ|ஆப்ஷன்\s*ஆ|விருப்பம்\s*ஆ)\b/i.test(transcript) || transcript === 'ஆ') matchedIdx = 1;
+      else if (/\b(?:இ|ஆப்ஷன்\s*இ|விருப்பம்\s*இ)\b/i.test(transcript) || transcript === 'இ') matchedIdx = 2;
+      else if (/\b(?:ஈ|ஆப்ஷன்\s*ஈ|விருப்பம்\s*ஈ)\b/i.test(transcript) || transcript === 'ஈ') matchedIdx = 3;
+    }
+
+    // 3. English option letter matching: A, B, C, D
+    if (matchedIdx === -1) {
+      if (/\b(?:a|option\s*a)\b/i.test(transcript)) matchedIdx = 0;
+      else if (/\b(?:b|option\s*b)\b/i.test(transcript)) matchedIdx = 1;
+      else if (/\b(?:c|option\s*c)\b/i.test(transcript)) matchedIdx = 2;
+      else if (/\b(?:d|option\s*d)\b/i.test(transcript)) matchedIdx = 3;
+    }
+
+    // 4. Tamil and English number words / ordinals
+    if (matchedIdx === -1) {
+      if (/(?:ஒன்று|முதலாவது|முதல்|1|one|first)/i.test(transcript)) matchedIdx = 0;
+      else if (/(?:இரண்டு|இரண்டாவது|2|two|second)/i.test(transcript)) matchedIdx = 1;
+      else if (/(?:மூன்று|மூன்றாவது|3|three|third)/i.test(transcript)) matchedIdx = 2;
+      else if (/(?:நான்கு|நான்காவது|4|four|fourth)/i.test(transcript)) matchedIdx = 3;
+    }
+
+    if (matchedIdx !== -1) {
+      setSelectedOption(matchedIdx);
+      setMicState('captured');
+      setVoiceFeedbackMsg(`குரல் அடையாளம் காணப்பட்டது: "${q.options[matchedIdx]}" ✓ (விடையை சரிபார்த்து சமர்ப்பிக்கவும்)`);
+    } else {
+      setVoiceFeedbackMsg(`"${rawTranscript}" — பொருத்தமான விடை கிடைக்கவில்லை. மீண்டும் கூறவும் அல்லது தொடவும்.`);
+    }
+  };
 
   // Initialize Speech Recognition on mount
   useEffect(() => {
@@ -160,27 +230,56 @@ export default function TamilVoiceQuiz({ lang = 'ta' }) {
     try {
       const recognition = new SpeechRecognition();
       recognition.lang = 'ta-IN'; // Tamil (India)
-      recognition.continuous = false;
-      recognition.interimResults = false;
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.maxAlternatives = 1;
 
       recognition.onstart = () => {
-        setIsListening(true);
+        setMicState('recording');
         setVoiceFeedbackMsg('பேசுங்கள்... உங்கள் குரல் கேட்கப்படுகிறது (Listening...)');
       };
 
       recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript.trim().toLowerCase();
-        setVoiceTranscript(transcript);
-        handleVoiceMatch(transcript);
+        let interim = '';
+        let newlyFinalized = '';
+
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          const res = event.results[i];
+          const text = res[0].transcript;
+          if (res.isFinal) {
+            newlyFinalized += (newlyFinalized ? ' ' : '') + text.trim();
+          } else {
+            interim += text;
+          }
+        }
+
+        if (newlyFinalized) {
+          finalTranscriptRef.current += (finalTranscriptRef.current ? ' ' : '') + newlyFinalized;
+        }
+
+        const accumulated = (finalTranscriptRef.current + (interim ? (finalTranscriptRef.current ? ' ' : '') + interim : '')).trim();
+        setVoiceTranscript(accumulated);
+
+        if (accumulated) {
+          handleVoiceMatch(accumulated);
+        }
       };
 
       recognition.onerror = (e) => {
-        setIsListening(false);
-        setVoiceFeedbackMsg('குரல் கேட்கவில்லை அல்லது அனுமதி இல்லை. கீழே உள்ள விடைகளை நேரடியாகத் தொடவும்.');
+        console.warn('Speech recognition error in quiz:', e.error);
+        if (e.error === 'no-speech') return;
+        setMicState('error');
+        if (e.error === 'not-allowed') {
+          setVoiceFeedbackMsg('ஒலிவாங்கி (Microphone) அனுமதி மறுக்கப்பட்டது. உலாவியின் அமைப்பில் அனுமதி வழங்கவும்.');
+        } else {
+          setVoiceFeedbackMsg(`குரல் அறிதல் பிழை: ${e.error}. கீழே உள்ள விடைகளை நேரடியாகத் தொடவும்.`);
+        }
       };
 
       recognition.onend = () => {
-        setIsListening(false);
+        if (micState === 'recording') {
+          setMicState('ready');
+        }
       };
 
       recognitionRef.current = recognition;
@@ -199,7 +298,6 @@ export default function TamilVoiceQuiz({ lang = 'ta' }) {
   const startQuiz = () => {
     const shuffledQ = [...CANONICAL_QUIZ_BANK].sort(() => 0.5 - Math.random()).slice(0, 10);
     const randomized = shuffledQ.map((q) => {
-      // Keep correct option text
       const correctText = q.options[q.correctIndex];
       const shuffledOptions = [...q.options].sort(() => 0.5 - Math.random());
       const newCorrectIndex = shuffledOptions.indexOf(correctText);
@@ -218,39 +316,17 @@ export default function TamilVoiceQuiz({ lang = 'ta' }) {
     setUserAnswers([]);
     setVoiceTranscript('');
     setVoiceFeedbackMsg('');
+    finalTranscriptRef.current = '';
+    setMicState('ready');
     setGameState('playing');
   };
 
   const currentQ = questions[currentIndex];
 
-  // Match voice transcript against options
-  const handleVoiceMatch = (transcript) => {
-    if (!currentQ || isAnswerSubmitted) return;
-
-    // Check direct word match or option number words (ஒன்று, இரண்டு, மூன்று, நான்கு or a, b, c, d)
-    let matchedIdx = -1;
-
-    currentQ.options.forEach((opt, idx) => {
-      const optClean = opt.trim().toLowerCase();
-      if (transcript.includes(optClean) || optClean.includes(transcript)) {
-        matchedIdx = idx;
-      }
-    });
-
-    if (matchedIdx === -1) {
-      if (transcript.includes('ஒன்று') || transcript.includes('1') || transcript.includes('முதல்')) matchedIdx = 0;
-      else if (transcript.includes('இரண்டு') || transcript.includes('2')) matchedIdx = 1;
-      else if (transcript.includes('மூன்று') || transcript.includes('3')) matchedIdx = 2;
-      else if (transcript.includes('நான்கு') || transcript.includes('4')) matchedIdx = 3;
-    }
-
-    if (matchedIdx !== -1) {
-      setSelectedOption(matchedIdx);
-      setVoiceFeedbackMsg(`குரல் அடையாளம் காணப்பட்டது: "${currentQ.options[matchedIdx]}" ✓`);
-    } else {
-      setVoiceFeedbackMsg(`"${transcript}" — பொருத்தமான விடை கிடைக்கவில்லை. மீண்டும் கூறவும் அல்லது தொடவும்.`);
-    }
-  };
+  // Sync currentQRef with the current question (must be after currentQ is defined)
+  useEffect(() => {
+    currentQRef.current = currentQ;
+  }, [currentQ]);
 
   const toggleVoiceInput = () => {
     if (!voiceSupported) {
@@ -258,16 +334,21 @@ export default function TamilVoiceQuiz({ lang = 'ta' }) {
       return;
     }
 
-    if (isListening) {
-      try { recognitionRef.current?.stop(); } catch {}
-      setIsListening(false);
+    if (micState === 'recording') {
+      try {
+        setMicState('processing');
+        recognitionRef.current?.stop();
+      } catch {}
+      setTimeout(() => setMicState('ready'), 300);
     } else {
       setVoiceTranscript('');
       setVoiceFeedbackMsg('');
+      finalTranscriptRef.current = '';
       try {
         recognitionRef.current?.start();
       } catch (err) {
         console.warn('Speech start error:', err);
+        setMicState('error');
       }
     }
   };

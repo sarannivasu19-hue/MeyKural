@@ -30,14 +30,23 @@ const PAGE_BACKGROUNDS = {
 };
 
 export default function App() {
+  const parseHash = (rawHash) => {
+    // Handle both '#chat' and '#/chat' formats
+    return rawHash.replace(/^#\/?/, '').trim().toLowerCase();
+  };
+
+  const isValidTab = (tab) => {
+    return !!(tab && (PAGE_BACKGROUNDS[tab] || tab === 'admin' || tab === 'eval'));
+  };
+
   const getInitialTab = () => {
     if (typeof window !== 'undefined') {
-      const hash = window.location.hash.replace('#', '').trim().toLowerCase();
-      if (hash && (PAGE_BACKGROUNDS[hash] || hash === 'admin' || hash === 'eval')) {
+      const hash = parseHash(window.location.hash);
+      if (isValidTab(hash)) {
         return hash;
       }
       const saved = localStorage.getItem('kural_active_tab');
-      if (saved && (PAGE_BACKGROUNDS[saved] || saved === 'admin' || saved === 'eval')) {
+      if (isValidTab(saved)) {
         return saved;
       }
     }
@@ -59,12 +68,16 @@ export default function App() {
 
   useEffect(() => {
     const handleHashChange = () => {
-      const hash = window.location.hash.replace('#', '').trim().toLowerCase();
+      // Handle both '#chat' and '#/chat' URL formats (direct navigation or typed URL)
+      const hash = window.location.hash.replace(/^#\/?/, '').trim().toLowerCase();
       if (hash && (PAGE_BACKGROUNDS[hash] || hash === 'admin' || hash === 'eval')) {
         setActiveTabState(hash);
+        localStorage.setItem('kural_active_tab', hash);
       }
     };
     window.addEventListener('hashchange', handleHashChange);
+    // Also handle the initial URL on mount (in case React renders before hash listener)
+    handleHashChange();
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 

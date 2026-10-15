@@ -335,10 +335,10 @@ export default function VerifierScreen({ lang = 'ta', initialText = '' }) {
     }
   };
 
-  // Canvas downscale to max 2000px before OCR
+  // Gentle canvas downscale (maintaining continuous tones and high DPI without destructive thresholding)
   const downscaleCanvas = (file) => {
     return new Promise((resolve, reject) => {
-      const MAX_DIM = 2000;
+      const MAX_DIM = 2200;
       const img = new Image();
       img.onload = () => {
         let w = img.width;
@@ -352,15 +352,18 @@ export default function VerifierScreen({ lang = 'ta', initialText = '' }) {
         canvas.width = w;
         canvas.height = h;
         const ctx = canvas.getContext('2d');
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
         ctx.drawImage(img, 0, 0, w, h);
 
-        // Grayscale + threshold for better OCR
+        // Gentle grayscale contrast enhancement preserving continuous tones for Tamil glyphs
         const imgData = ctx.getImageData(0, 0, w, h);
         const data = imgData.data;
         for (let i = 0; i < data.length; i += 4) {
           const gray = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
-          const val = gray > 140 ? 255 : 0;
-          data[i] = val; data[i + 1] = val; data[i + 2] = val;
+          data[i] = gray;
+          data[i + 1] = gray;
+          data[i + 2] = gray;
         }
         ctx.putImageData(imgData, 0, 0);
         resolve(canvas);
@@ -370,13 +373,37 @@ export default function VerifierScreen({ lang = 'ta', initialText = '' }) {
     });
   };
 
+  const fileToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
+
   const processUploadedFile = async (file) => {
     if (!file) return;
 
-    // Accept image/* including HEIC
-    if (!file.type.startsWith('image/') && !file.name.toLowerCase().match(/\.(heic|heif)$/)) {
+    // Validate supported formats (JPEG, JPG, PNG, WebP, HEIC/HEIF)
+    const validExts = /\.(jpe?g|png|webp|heic|heif)$/i;
+    const isImageMime = file.type.startsWith('image/') || file.type === 'application/octet-stream';
+    const hasValidExt = file.name.match(validExts);
+
+    if (!isImageMime && !hasValidExt) {
       setUploadStatus('error');
-      setOcrError(lang === 'ta' ? 'படக் கோப்புகளை மட்டுமே ஏற்கலாம் (JPG, PNG, WebP, HEIC).' : 'Only image files are supported (JPG, PNG, WebP, HEIC).');
+      setOcrError(lang === 'ta'
+        ? 'படக் கோப்புகளை மட்டுமே ஏற்கலாம் (JPG, PNG, WebP, HEIC).'
+        : 'Only image files are supported (JPG, PNG, WebP, HEIC).');
+      return;
+    }
+
+    // Size limit check (15MB)
+    if (file.size > 15 * 1024 * 1024) {
+      setUploadStatus('error');
+      setOcrError(lang === 'ta'
+        ? 'படத்தின் அளவு 15MB-க்கு குறைவாக இருக்க வேண்டும்.'
+        : 'File size exceeds maximum allowed 15MB limit.');
       return;
     }
 
@@ -385,30 +412,90 @@ export default function VerifierScreen({ lang = 'ta', initialText = '' }) {
     setSelectedFile({ name: file.name, size: (file.size / 1024).toFixed(1) + ' KB' });
     setUploadStatus('processing');
     setOcrError('');
-    setOcrProgress(10);
+    setOcrProgress(15);
 
+    // Stage 1: Try Authoritative Backend Preprocessing & OCR Pipeline
     try {
-      const canvas = await downscaleCanvas(file);
       setOcrProgress(30);
+      const base64Data = await fileToBase64(file);
+      setOcrProgress(50);
+
+      const res = await fetch('/api/verify-image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          image_base64: base64Data,
+          filename: file.name,
+          mime_type: file.type,
+          source_ai: sourceAi || 'Not from AI',
+          claimed_adhikaram: claimedAdhikaram || null,
+          claimed_kural_number: claimedKuralNumber ? parseInt(claimedKuralNumber, 10) : null
+        })
+      });
+
+      setOcrProgress(90);
+
+      if (res.ok) {
+        const verifyData = await res.json();
+        setOcrProgress(100);
+        setUploadStatus('success');
+
+        const extractedText = verifyData.extracted_text || '';
+        setCoupletText(extractedText);
+        setResult(verifyData);
+
+        if (verifyData.status === 'verified') {
+          sounds.playCorrect?.();
+        } else if (verifyData.status === 'near_match') {
+          sounds.playStamp?.();
+        } else {
+          sounds.playWrong?.();
+        }
+        return;
+      }
+
+      // If backend returned a specific error (e.g. no text or invalid image)
+      const errData = await res.json().catch(() => ({}));
+      if (res.status === 400 || res.status === 422) {
+        setUploadStatus('error');
+        if (errData.code === 'NO_TAMIL_TEXT') {
+          setOcrError(lang === 'ta'
+            ? 'படத்திலிருந்து தமிழ் எழுத்துக்களை அடையாளம் காண முடியவில்லை. வெளிச்சம் உள்ள தெளிவான படத்தை பதிவேற்றவும்.'
+            : 'No readable Tamil text found in the image. Please upload a clearer photo.');
+        } else if (errData.code === 'INVALID_IMAGE') {
+          setOcrError(lang === 'ta'
+            ? 'செல்லுபடியாகாத அல்லது சிதைந்த படக் கோப்பு. வேறு படத்தை முயற்சிக்கவும்.'
+            : 'Invalid or corrupted image file. Please try another image.');
+        } else {
+          setOcrError(errData.error || (lang === 'ta' ? 'படத்தை வாசிப்பதில் பிழை ஏற்பட்டது.' : 'Image OCR processing failed.'));
+        }
+        return;
+      }
+    } catch (backendErr) {
+      console.warn('Backend OCR unavailable, attempting local fallback:', backendErr);
+    }
+
+    // Stage 2: Fallback to client-side OCR if backend is unreachable
+    try {
+      setOcrProgress(60);
+      const canvas = await downscaleCanvas(file);
 
       const { createWorker } = await import('tesseract.js');
       const worker = await createWorker('tam', 1, {
         logger: (m) => {
           if (m.status === 'recognizing text') {
-            setOcrProgress(30 + Math.round((m.progress || 0) * 65));
+            setOcrProgress(60 + Math.round((m.progress || 0) * 35));
           }
         }
       });
-      setOcrProgress(60);
 
       const ret = await worker.recognize(canvas);
       await worker.terminate();
       setOcrProgress(100);
 
       const extracted = (ret.data?.text || '').trim();
-      const confidence = ret.data?.confidence || 0;
 
-      if (!extracted || confidence < 25) {
+      if (!extracted) {
         setUploadStatus('error');
         setOcrError(lang === 'ta'
           ? 'படத்தின் எழுத்து தெளிவு குறைவாக உள்ளது. நல்ல வெளிச்சத்தில் படம் எடுக்கவும்.'
@@ -433,12 +520,14 @@ export default function VerifierScreen({ lang = 'ta', initialText = '' }) {
       setResult(null);
       setUploadStatus('success');
 
-      // Auto trigger verification
-      setTimeout(() => handleVerify(extractedText), 200);
+      // Trigger verification
+      setTimeout(() => handleVerify(extractedText), 150);
     } catch (err) {
-      console.error('OCR failed:', err);
+      console.error('All OCR methods failed:', err);
       setUploadStatus('error');
-      setOcrError(lang === 'ta' ? 'எழுத்துகளை அடையாளம் காண முடியவில்லை. வேறு படத்தை முயற்சிக்கவும்.' : 'Failed to extract Tamil text from image. Please try another image.');
+      setOcrError(lang === 'ta'
+        ? 'எழுத்துகளை அடையாளம் காண முடியவில்லை. வேறு படத்தை முயற்சிக்கவும்.'
+        : 'Failed to extract Tamil text from image. Please try another image.');
     }
   };
 

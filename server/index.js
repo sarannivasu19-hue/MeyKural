@@ -12,6 +12,12 @@ const fs = require('fs');
 
 const { verifyCouplet } = require('./verifier');
 const {
+  validateImageBuffer,
+  preprocessImageBuffer,
+  performTamilOcr,
+  verifyOcrCouplet
+} = require('./ocr');
+const {
   getCoupletByNumber,
   getCoupletsByChapter,
   getAllChapters,
@@ -64,7 +70,7 @@ app.use(cors({
   credentials: true
 }));
 app.use(cookieParser());
-app.use(express.json({ limit: '5mb' }));
+app.use(express.json({ limit: '25mb' }));
 
 // 1. Health & Config
 app.get('/api/health', (req, res) => {
@@ -278,6 +284,172 @@ app.post('/api/verify', (req, res) => {
   }
 
   res.json(result);
+});
+
+// Image Verification Endpoint (Validates, pre-processes via sharp, runs Tamil OCR, and verifies)
+app.post('/api/verify-image', async (req, res) => {
+  const {
+    image_base64,
+    filename = 'upload.png',
+    mime_type = 'image/png',
+    source_ai = 'Not from AI',
+    claimed_adhikaram = null,
+    claimed_kural_number = null
+  } = req.body || {};
+
+  if (!image_base64) {
+    return res.status(400).json({ error: 'Image data is required.', code: 'MISSING_IMAGE' });
+  }
+
+  try {
+    // Strip data URL prefix (handles all image types including heic, heif, etc.)
+    const base64Data = image_base64.replace(/^data:[^;]+;base64,/, '');
+    const buffer = Buffer.from(base64Data, 'base64');
+
+    // 1. Validate Image Buffer (async - uses sharp metadata fallback)
+    const validation = await validateImageBuffer(buffer, filename, mime_type);
+    if (!validation.valid) {
+      return res.status(400).json({ error: validation.error, code: 'INVALID_IMAGE' });
+    }
+
+    // 2. Preprocess Image
+    let preprocessed;
+    try {
+      preprocessed = await preprocessImageBuffer(buffer);
+    } catch (prepErr) {
+      return res.status(400).json({ error: prepErr.message, code: 'CORRUPTED_IMAGE' });
+    }
+
+    // 3. Tamil OCR
+    let extractedText = '';
+    try {
+      extractedText = await performTamilOcr(preprocessed);
+    } catch (ocrErr) {
+      console.warn('OCR processing error:', ocrErr.message);
+      return res.status(422).json({
+        error: `OCR processing failed: ${ocrErr.message}`,
+        code: 'OCR_FAILED'
+      });
+    }
+
+    if (!extractedText || !extractedText.trim()) {
+      return res.status(422).json({
+        error: 'No readable Tamil text found in the image. Please upload a clearer image.',
+        code: 'NO_TAMIL_TEXT'
+      });
+    }
+
+    // 4. Controlled Verification against 1,330 Canonical Kurals
+    const result = verifyOcrCouplet(extractedText);
+    const ip = req.ip || req.connection.remoteAddress || 'unknown';
+
+    // Check Known Fakes Registry
+    const knownFake = checkKnownFake(result.extracted_text || extractedText);
+    result.known_fake = knownFake || null;
+
+    // Attribution Check (if user provided claimed_adhikaram or claimed_kural_number)
+    if (result.status === 'verified' || result.status === 'near_match') {
+      const realChapterNum = result.kural?.chapter_number;
+      const realChapterName = result.kural?.chapter_name;
+      const realKuralNum = result.kural?.number;
+
+      let adhikaramMatch = null;
+      let numberMatch = null;
+
+      if (claimed_adhikaram) {
+        const claimedAdhNumMatch = String(claimed_adhikaram).match(/^\d+/);
+        const claimedNum = claimedAdhNumMatch ? parseInt(claimedAdhNumMatch[0], 10) : null;
+        if (claimedNum) {
+          adhikaramMatch = (claimedNum === realChapterNum);
+        } else {
+          adhikaramMatch = String(realChapterName).includes(String(claimed_adhikaram).trim());
+        }
+      }
+
+      if (claimed_kural_number) {
+        numberMatch = (parseInt(claimed_kural_number, 10) === realKuralNum);
+      }
+
+      result.attribution_check = {
+        performed: true,
+        claimed_adhikaram,
+        claimed_kural_number,
+        real_adhikaram_number: realChapterNum,
+        real_adhikaram_name: realChapterName,
+        real_kural_number: realKuralNum,
+        adhikaram_match: adhikaramMatch,
+        number_match: numberMatch,
+        is_correct: (adhikaramMatch !== false && numberMatch !== false)
+      };
+    } else {
+      result.attribution_check = {
+        performed: false,
+        reason: 'குறள் திருக்குறள் தரவுத்தளத்தில் இல்லாததால் அதிகாரம் சரிபார்ப்பு தவிர்க்கப்பட்டது.'
+      };
+    }
+
+    // Record fake if applicable
+    const isAiSource = source_ai && !['Not from AI', 'புத்தகம்/இணையதளம்', 'வேறு', 'நினைவில்லை'].includes(source_ai);
+    if (result.status !== 'verified' && isAiSource) {
+      try {
+        const savedFake = recordKnownFake({
+          fakeText: result.extracted_text || extractedText,
+          sourceAi: source_ai,
+          claimedAdhikaram: claimed_adhikaram,
+          claimedKuralNumber: claimed_kural_number,
+          isDemo: 0
+        });
+        if (savedFake) {
+          result.saved_to_known_fakes = true;
+        }
+      } catch (e) {
+        console.warn('Failed to record known fake:', e.message);
+      }
+    }
+
+    // Log verification to database
+    try {
+      logVerification({
+        inputText: result.extracted_text || extractedText,
+        resultStatus: result.status,
+        wrongWordsCount: result.wrong_words_count || 0,
+        kuralNumber: result.kural?.number || null,
+        sourceAi: source_ai,
+        ip,
+        isDemo: 0,
+        claimedAdhikaram: claimed_adhikaram,
+        claimedKuralNumber: claimed_kural_number
+      });
+    } catch (e) {
+      console.warn('Failed to log verification:', e.message);
+    }
+
+    return res.json(result);
+  } catch (err) {
+    console.error('Verify image error:', err);
+    return res.status(500).json({ error: `Internal image verification error: ${err.message}`, code: 'SERVER_ERROR' });
+  }
+});
+
+// Standalone OCR Endpoint
+app.post('/api/ocr', async (req, res) => {
+  const { image_base64, filename = 'upload.png', mime_type = 'image/png' } = req.body || {};
+  if (!image_base64) {
+    return res.status(400).json({ error: 'Image data is required.', code: 'MISSING_IMAGE' });
+  }
+  try {
+    const base64Data = image_base64.replace(/^data:image\/\w+;base64,/, '');
+    const buffer = Buffer.from(base64Data, 'base64');
+    const validation = validateImageBuffer(buffer, filename, mime_type);
+    if (!validation.valid) {
+      return res.status(400).json({ error: validation.error, code: 'INVALID_IMAGE' });
+    }
+    const preprocessed = await preprocessImageBuffer(buffer);
+    const extractedText = await performTamilOcr(preprocessed);
+    res.json({ extracted_text: extractedText, format: validation.format });
+  } catch (err) {
+    res.status(500).json({ error: err.message, code: 'OCR_ERROR' });
+  }
 });
 
 // 4. Couplets Search & Listing

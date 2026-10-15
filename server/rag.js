@@ -1,12 +1,20 @@
 /**
  * மெய்க்குறள் (MeyKural) Strict RAG & Chatbot Engine
+ * - Deterministic retrieval for exact Kural numbers, Athikarams, and positions.
  * - Retrieval-first from SQLite database
- * - System prompt strictly forbids inventing or guessing kurals
+ * - Grounded LLM generation using only authoritative records
  * - Self-verification of any quoted kurals
- * - Offline/No-key fallback with canonical retrieval answers
+ * - Full offline support with canonical retrieval answers
  */
-const { searchKurals, getCoupletByNumber, getSetting } = require('./db');
+const {
+  searchKurals,
+  getCoupletByNumber,
+  getCoupletsByChapter,
+  getAllChapters,
+  getSetting
+} = require('./db');
 const { verifyCouplet } = require('./verifier');
+const { parseKuralQuery } = require('./kuralParser');
 const fs = require('fs');
 const path = require('path');
 
@@ -61,18 +69,249 @@ function selfVerifyAnswer(answerText) {
   return { cleanText, verifiedCards, hallucinationsFound };
 }
 
+/**
+ * Main chat handler implementing retrieval-before-generation
+ */
 async function handleChatQuery(message, conversationHistory = []) {
   const config = JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf8'));
 
-  const provider = getSetting('chatbot_provider', process.env.GEMINI_API_KEY ? 'gemini' : process.env.ANTHROPIC_API_KEY ? 'claude' : 'offline');
   const geminiKey = process.env.GEMINI_API_KEY;
   const anthropicKey = process.env.ANTHROPIC_API_KEY;
+  const allChapters = getAllChapters();
 
-  // 1. Retrieval First: Query canonical SQLite database
+  // Step 1: Detect intent and extract entities (numbers, athikarams, positions)
+  const parsed = parseKuralQuery(message, allChapters);
+
+  // =========================================================================
+  // CASE 1: Exact Kural Number or Meaning Request
+  // =========================================================================
+  if (parsed.type === 'exact_kural' || parsed.type === 'kural_meaning') {
+    const num = parsed.kuralNumber;
+
+    // Range check: 1 to 1,330
+    if (num < 1 || num > 1330) {
+      return {
+        status: 'out_of_range',
+        mode: 'deterministic',
+        answer: `⚠️ **வரம்பிற்கு அப்பாற்பட்ட குறள் எண் (${num}):**\n\nதிருக்குறளில் மொத்தம் **1,330 குறட்பாக்கள்** மட்டுமே உள்ளன (133 அதிகாரங்கள், அதிகாரத்திற்கு 10 குறள்கள் வீதம்).\n\nநீங்கள் கேட்ட குறள் எண் **#${num}** செல்லுபடியாகாது. தயவுசெய்து 1 முதல் 1330 வரையிலான எண்ணைக் கேட்கவும்.\n\n*(The Thirukkural contains exactly 1,330 couplets across 133 chapters. Couplet #${num} is out of range).*`,
+        verifiedCards: []
+      };
+    }
+
+    const k = getCoupletByNumber(num);
+    if (!k) {
+      return {
+        status: 'not_found',
+        mode: 'deterministic',
+        answer: `குறள் எண் #${num} தரவுத்தளத்தில் காணப்படவில்லை.`,
+        verifiedCards: []
+      };
+    }
+
+    // Build authoritative response
+    let answer = `### குறள் #${k.number} — ${k.chapter_name} (${k.chapter_translation})\n\n`;
+    answer += `> **${k.line1}**\n> **${k.line2}**\n\n`;
+    answer += `- **அதிகாரம்:** ${k.chapter_name} (அதிகாரம் #${k.chapter_number})\n`;
+    answer += `- **பால்:** ${k.section_name} (${k.section_translation})\n`;
+    if (k.group_name) answer += `- **இயல்:** ${k.group_name}\n`;
+    answer += `\n#### 📖 உரைகள் (Meanings):\n`;
+    answer += `- **மு. வரதராசனார் உரை:** ${k.meaning_mv}\n`;
+    if (k.meaning_sp) answer += `- **சாலமன் பாப்பையா உரை:** ${k.meaning_sp}\n`;
+    if (k.meaning_mk) answer += `- **மு. கருணாநிதி உரை:** ${k.meaning_mk}\n`;
+    if (k.translation_en) {
+      answer += `\n**English Translation:**\n> *"${k.translation_en}"*\n`;
+    }
+
+    const card = {
+      number: k.number,
+      chapter: k.chapter_name,
+      translation: k.chapter_translation,
+      line1: k.line1,
+      line2: k.line2,
+      meaning: k.meaning_mv
+    };
+
+    // If Gemini key is available and user asked for deeper meaning/explanation
+    if (geminiKey && parsed.isMeaningRequest) {
+      try {
+        const geminiModel = process.env.GEMINI_MODEL || getSetting('gemini_model') || getSetting('chatbot_model') || config.gemini_model || 'gemini-3.5-flash-lite';
+        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${geminiKey}`;
+        const prompt = `You are a respectful Tamil Thirukkural scholar.
+AUTHORITATIVE KURAL RECORD:
+Kural #${k.number}: "${k.line1} / ${k.line2}"
+Chapter: ${k.chapter_name} (${k.chapter_translation})
+Section: ${k.section_name}
+Meaning: ${k.meaning_mv}
+English: ${k.translation_en}
+
+User Question: "${message}"
+
+Task: Provide a brief, beautiful scholarly explanation of this exact couplet in Tamil and English based on the record above. Do not alter the couplet words.`;
+
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: { temperature: 0.2, maxOutputTokens: 600 }
+          }),
+          signal: AbortSignal.timeout(10000)
+        });
+
+        if (res.ok) {
+          const gData = await res.json();
+          const extra = gData.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (extra) {
+            answer += `\n---\n#### 💡 திருவள்ளுவர் சிந்தனை விளக்கம்:\n${extra.trim()}`;
+          }
+        }
+      } catch {}
+    }
+
+    return {
+      status: 'online',
+      mode: 'deterministic_canonical',
+      answer,
+      verifiedCards: [card]
+    };
+  }
+
+  // =========================================================================
+  // CASE 2: Specific Kural within an Athikaram
+  // Examples: "கல்வி அதிகாரத்தில் 5வது குறள் என்ன?", "Show the third Kural in Kalvi athikaram"
+  // =========================================================================
+  if (parsed.type === 'kural_in_athikaram') {
+    const k = getCoupletByNumber(parsed.kuralNumber);
+    if (!k) {
+      return {
+        status: 'not_found',
+        mode: 'deterministic',
+        answer: `அதிகாரம் ${parsed.chapter.name}-ல் குறள் எண் ${parsed.position} காணப்படவில்லை.`,
+        verifiedCards: []
+      };
+    }
+
+    let answer = `### அதிகாரம் ${parsed.chapter.name} — ${parsed.position}-வது குறள் (குறள் #${k.number})\n\n`;
+    answer += `> **${k.line1}**\n> **${k.line2}**\n\n`;
+    answer += `- **அதிகாரம்:** ${k.chapter_name} (அதிகாரம் #${k.chapter_number}) • ${k.chapter_translation}\n`;
+    answer += `- **பால்:** ${k.section_name} (${k.section_translation})\n\n`;
+    answer += `#### 📖 உரை:\n- **மு. வரதராசனார் உரை:** ${k.meaning_mv}\n`;
+    if (k.meaning_sp) answer += `- **சாலமன் பாப்பையா உரை:** ${k.meaning_sp}\n`;
+    if (k.translation_en) answer += `\n**English:** *"${k.translation_en}"*\n`;
+
+    const card = {
+      number: k.number,
+      chapter: k.chapter_name,
+      translation: k.chapter_translation,
+      line1: k.line1,
+      line2: k.line2,
+      meaning: k.meaning_mv
+    };
+
+    return {
+      status: 'online',
+      mode: 'deterministic_canonical',
+      answer,
+      verifiedCards: [card]
+    };
+  }
+
+  // =========================================================================
+  // CASE 3: Athikaram Number
+  // Examples: "10வது அதிகாரத்தைச் சொல்லு", "அதிகாரம் 10-ல் உள்ள குறள்கள் என்ன?", "Show all Kurals in Athikaram 10"
+  // =========================================================================
+  if (parsed.type === 'athikaram_number') {
+    const athNum = parsed.athikaramNumber;
+
+    if (athNum < 1 || athNum > 133) {
+      return {
+        status: 'out_of_range',
+        mode: 'deterministic',
+        answer: `⚠️ **வரம்பிற்கு அப்பாற்பட்ட அதிகாரம் (${athNum}):**\n\nதிருக்குறளில் மொத்தம் **133 அதிகாரங்கள்** மட்டுமே உள்ளன (ஒவ்வொரு அதிகாரத்திலும் 10 குறள்கள் வீதம் 1,330 குறள்கள்).\n\nநீங்கள் கேட்ட அதிகாரம் எண் **#${athNum}** இல்லை. தயவுசெய்து 1 முதல் 133 வரையிலான அதிகாரத்தைக் கேட்கவும்.\n\n*(The Thirukkural contains exactly 133 chapters. Chapter #${athNum} is out of range).*`,
+        verifiedCards: []
+      };
+    }
+
+    const kurals = getCoupletsByChapter(athNum);
+    const chapter = allChapters.find((c) => c.number === athNum) || {
+      name: kurals[0]?.chapter_name || `அதிகாரம் ${athNum}`,
+      translation: kurals[0]?.chapter_translation || '',
+      section_name: 'பொருட்பால்',
+      section_translation: 'Wealth'
+    };
+
+    let answer = `### அதிகாரம் #${athNum}: ${chapter.name} (${chapter.translation})\n`;
+    answer += `**பால்:** ${chapter.section_name} (${chapter.section_translation}) • **குறள்கள்:** ${chapter.start_kural || (athNum - 1) * 10 + 1} முதல் ${chapter.end_kural || athNum * 10} வரை\n\n`;
+    answer += `இந்த அதிகாரத்தில் உள்ள 10 அதிகாரபூர்வக் குறட்பாக்கள்:\n\n`;
+
+    const cards = [];
+    kurals.forEach((k, idx) => {
+      answer += `**${idx + 1}. குறள் #${k.number}:**\n> ${k.line1}\n> ${k.line2}\n*பொருள்:* ${k.meaning_mv}\n\n`;
+      cards.push({
+        number: k.number,
+        chapter: k.chapter_name,
+        translation: k.chapter_translation,
+        line1: k.line1,
+        line2: k.line2,
+        meaning: k.meaning_mv
+      });
+    });
+
+    return {
+      status: 'online',
+      mode: 'deterministic_canonical',
+      answer,
+      verifiedCards: cards
+    };
+  }
+
+  // =========================================================================
+  // CASE 4: Athikaram by Name
+  // Examples: "கல்வி அதிகாரத்தை விளக்கு", "கல்வி அதிகாரத்தில் உள்ள குறள்கள் என்ன?", "Explain the Kalvi Athikaram"
+  // =========================================================================
+  if (parsed.type === 'athikaram_name') {
+    const ch = parsed.chapter;
+    const kurals = getCoupletsByChapter(ch.number);
+
+    let answer = `### அதிகாரம் #${ch.number}: ${ch.name} (${ch.translation})\n`;
+    answer += `**பால்:** ${ch.section_name} (${ch.section_translation}) • **குறள்கள்:** ${ch.start_kural} முதல் ${ch.end_kural} வரை\n\n`;
+    answer += `இவ்வதிகாரத்தில் உள்ள 10 குறட்பாக்கள் மற்றும் உரைகள்:\n\n`;
+
+    const cards = [];
+    kurals.forEach((k, idx) => {
+      answer += `**${idx + 1}. குறள் #${k.number}:**\n> ${k.line1}\n> ${k.line2}\n*பொருள்:* ${k.meaning_mv}\n\n`;
+      cards.push({
+        number: k.number,
+        chapter: k.chapter_name,
+        translation: k.chapter_translation,
+        line1: k.line1,
+        line2: k.line2,
+        meaning: k.meaning_mv
+      });
+    });
+
+    return {
+      status: 'online',
+      mode: 'deterministic_canonical',
+      answer,
+      verifiedCards: cards
+    };
+  }
+
+  // =========================================================================
+  // CASE 5: General Literature Topic / Question
+  // Examples: "திருக்குறளில் கல்வியின் முக்கியத்துவம் என்ன?", "வள்ளுவர் அன்பைப் பற்றி என்ன கூறுகிறார்?"
+  // =========================================================================
   const cleanQuery = message.replace(/[^\u0B80-\u0BFF\w\s]/g, ' ').trim();
-  const retrievedKurals = searchKurals(cleanQuery, { limit: 3 });
+  let retrievedKurals = [];
 
-  // 2. Offline / No API Key: Retrieval-only answer with friendly notice
+  if (parsed.matchedChapter) {
+    retrievedKurals = getCoupletsByChapter(parsed.matchedChapter.number).slice(0, 4);
+  } else {
+    retrievedKurals = searchKurals(cleanQuery, { limit: 4 });
+  }
+
+  // Offline / No API Key: Canonical retrieval response
   if (!geminiKey && !anthropicKey) {
     if (retrievedKurals.length === 0) {
       return {
@@ -84,9 +323,8 @@ async function handleChatQuery(message, conversationHistory = []) {
     }
 
     let offlineAnswer = `💡 **ஆஃப்லைன் தரவுத்தளத் தேடல் முடிவுகள் (Offline Retrieval):**\n\n*(AI API சாவி இல்லாததால், உங்கள் கேள்விக்குரிய உண்மையான குறள்கள் மற்றும் உரைகள் நேரடியாக உள்ளூர் தரவுத்தளத்திலிருந்து வழங்கப்படுகின்றன)*\n\n`;
-
     const cards = [];
-    retrievedKurals.forEach((k, idx) => {
+    retrievedKurals.forEach((k) => {
       offlineAnswer += `### குறள் #${k.number} — ${k.chapter_name} (${k.chapter_translation})\n`;
       offlineAnswer += `> **${k.line1}**\n> **${k.line2}**\n\n`;
       offlineAnswer += `- **மு. வரதராசனார் உரை:** ${k.meaning_mv}\n`;
@@ -111,7 +349,7 @@ async function handleChatQuery(message, conversationHistory = []) {
     };
   }
 
-  // 3. LLM with Strict System Prompt
+  // Grounded LLM Prompt with Strict Canonical Context
   let contextPrompt = 'உண்மையான திருக்குறள் தரவுத்தளத்திலிருந்து பெறப்பட்ட பகுதிகள் (Strict Canonical Context):\n';
   retrievedKurals.forEach((k) => {
     contextPrompt += `[குறள் #${k.number} - அதிகாரம்: ${k.chapter_name}]\n"${k.line1} / ${k.line2}"\nபொருள்: ${k.meaning_mv}\nஆங்கிலம்: ${k.translation_en}\n\n`;
@@ -140,7 +378,7 @@ CRITICAL MANDATES:
         ],
         generationConfig: {
           temperature: 0.1,
-          maxOutputTokens: 800
+          maxOutputTokens: 900
         }
       };
 
@@ -162,7 +400,7 @@ CRITICAL MANDATES:
       const endpoint = 'https://api.anthropic.com/v1/messages';
       const payload = {
         model: 'claude-3-haiku-20240307',
-        max_tokens: 800,
+        max_tokens: 900,
         temperature: 0.1,
         system: systemPrompt,
         messages: [{ role: 'user', content: `${contextPrompt}\n\nபயனர் கேள்வி: ${message}` }]
@@ -186,11 +424,10 @@ CRITICAL MANDATES:
       rawAnswer = data.content?.[0]?.text || '';
     }
 
-    // 4. Self-verification of any couplets inside the answer
+    // Self-verification of any couplets inside the answer
     const { cleanText, verifiedCards, hallucinationsFound } = selfVerifyAnswer(rawAnswer);
 
-    // Merge retrieved cards if verifiedCards is empty
-    const finalCards = verifiedCards.length > 0 ? verifiedCards : retrievedKurals.slice(0, 2).map((k) => ({
+    const finalCards = verifiedCards.length > 0 ? verifiedCards : retrievedKurals.slice(0, 3).map((k) => ({
       number: k.number,
       chapter: k.chapter_name,
       translation: k.chapter_translation,
@@ -208,7 +445,6 @@ CRITICAL MANDATES:
     };
   } catch (err) {
     console.error('LLM proxy failed, falling back to local retrieval:', err.message);
-    // Fallback to retrieval
     let fallbackText = `⚠️ **AI சேவை இணைப்பு பிழை (${err.message}). உள்ளூர் தரவுத்தள முடிவுகள்:**\n\n`;
     retrievedKurals.forEach((k) => {
       fallbackText += `**குறள் #${k.number} (${k.chapter_name}):**\n${k.line1}\n${k.line2}\n*பொருள்:* ${k.meaning_mv}\n\n`;

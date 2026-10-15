@@ -18,7 +18,6 @@ import {
   ExternalLink
 } from 'lucide-react';
 import { APP_CONFIG } from '../config';
-import { sounds } from '../utils/audio';
 
 export default function ChatbotScreen({ lang = 'ta' }) {
   const [messages, setMessages] = useState([
@@ -56,6 +55,11 @@ export default function ChatbotScreen({ lang = 'ta' }) {
       text: 'கல்வி அதிகாரத்தில் கூறப்படும் முதன்மை அறநெறி யாது?'
     }
   ];
+
+  // Synchronize chat language whenever the global language setting changes
+  useEffect(() => {
+    setChatLang(lang);
+  }, [lang]);
 
   useEffect(() => {
     fetchChatHealth();
