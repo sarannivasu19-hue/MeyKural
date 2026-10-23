@@ -10,7 +10,7 @@ export const APP_CONFIG = {
   logoMark: 'மெ',
   maxWrongWords: 2,
   canonicalCoupletsCount: 1330,
-  allowGuest: false,
+  allowGuest: true,
   // Login Background styling parameters (tunable)
   bgOverlay: 'linear-gradient(rgba(0,0,0,0.06), rgba(0,0,0,0.12))',
   bgFocusPosition: '28% center'
