@@ -38,12 +38,12 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Pass online-only API routes directly to network
+  // Pass all API routes and non-GET requests directly to network
   const url = new URL(event.request.url);
-  if (url.pathname.startsWith('/api/chat') || url.pathname.startsWith('/api/health')) {
+  if (event.request.method !== 'GET' || url.pathname.startsWith('/api/')) {
     event.respondWith(
       fetch(event.request).catch(() => {
-        return new Response(JSON.stringify({ error: 'Offline', offline: true }), {
+        return new Response(JSON.stringify({ error: 'Network error or offline', offline: true }), {
           headers: { 'Content-Type': 'application/json' }
         });
       })
